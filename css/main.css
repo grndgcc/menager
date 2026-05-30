@@ -1,0 +1,748 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   CYBERERA FOOTBALL MANAGER 2026 - MAIN CSS (ADIM 1)
+   Yazar: AI & Sen
+   Açıklama: Global değişkenler, temel tipografi, glassmorphism iskeleti,
+   UI elemanları, tooltip mekaniği ve GPU hızlandırmalı keyframe animasyonları.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS DEĞİŞKENLERİ (ROOT THEME)
+   -------------------------------------------------------------------------- */
+:root {
+    /* Renk Paleti: Koyu Siberpunk / Modern FM Karışımı */
+    --color-bg-deep: #050810;
+    --color-bg-darker: #0a0f1a;
+    --color-bg-dark: #121826;
+    --color-bg-light: #1e2638;
+    
+    /* Vurgu (Accent) Renkleri */
+    --color-primary: #00f3ff;       /* Neon Camgöbeği (Aktif elemanlar) */
+    --color-primary-glow: rgba(0, 243, 255, 0.4);
+    --color-secondary: #7000ff;     /* Derin Mor (İkincil detaylar) */
+    --color-tertiary: #ff007b;      /* Neon Pembe (Aktivite ve Yaşam) */
+
+    /* Durum Renkleri (RPG ve Maç Motoru Zarları İçin) */
+    --color-success: #00ff66;       /* Başarılı Zarlar / Yüksek Kondisyon */
+    --color-success-dim: rgba(0, 255, 102, 0.15);
+    --color-warning: #ffb800;       /* Orta Durum / Sarı Kart */
+    --color-warning-dim: rgba(255, 184, 0, 0.15);
+    --color-danger: #ff003c;        /* Başarısız Zarlar / Kırmızı Kart / Düşük Moral */
+    --color-danger-dim: rgba(255, 0, 60, 0.15);
+    --color-info: #00a2ff;          /* Bilgilendirme / Soğukkanlılık */
+
+    /* Metin Renkleri */
+    --color-text-main: #e2e8f0;
+    --color-text-muted: #94a3b8;
+    --color-text-dark: #0f172a;
+    --color-text-pure: #ffffff;
+
+    /* Glassmorphism Ayarları */
+    --glass-bg: rgba(18, 24, 38, 0.65);
+    --glass-bg-hover: rgba(30, 38, 56, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    --glass-blur: blur(16px);
+    --glass-blur-heavy: blur(24px);
+
+    /* Tipografi */
+    --font-heading: 'Rajdhani', sans-serif; /* Köşeli, fütüristik, teknolojik */
+    --font-body: 'Roboto', sans-serif;      /* Okunaklı, temiz veri gösterimi */
+
+    /* Ölçüler & Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.5rem;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-pill: 9999px;
+
+    /* Z-Index Katmanları */
+    --z-background: -10;
+    --z-base: 1;
+    --z-ui: 10;
+    --z-dropdown: 50;
+    --z-header: 100;
+    --z-tooltip: 500;
+    --z-modal: 1000;
+    --z-loader: 9999;
+
+    /* Geçişler (Transitions) */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. CSS RESET & GLOBAL BASE
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-text-main);
+    background-color: var(--color-bg-deep);
+    overflow: hidden; /* Uygulama SPA gibi çalışacak, ana scroll kapalı. Kutular scroll olacak */
+    line-height: 1.5;
+    user-select: none; /* Yanlışlıkla metin seçimini engelle, oyun hissi ver */
+}
+
+/* Sadece input ve kopyalanması gereken yerlerde text seçimine izin ver */
+input, textarea, .selectable-text {
+    user-select: text;
+}
+
+/* --- Özel Scrollbar (Siberpunk Tarzı İnce ve Neon) --- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border-light);
+    border-radius: var(--radius-pill);
+    transition: var(--transition-normal);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+/* --------------------------------------------------------------------------
+   3. GLOBAL ARKAPLAN (BACKGROUND) & AMBIENT IŞIKLAR
+   -------------------------------------------------------------------------- */
+#global-bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-background);
+    /* background.png varsayılan olarak aranacak, css klasörü dışındaki ana dizinde */
+    background-image: url('../background.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.02); /* Animasyon payı için hafif büyük */
+    animation: slow-pan 60s ease-in-out infinite alternate;
+}
+
+.glass-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(5, 8, 16, 0.4) 0%, rgba(5, 8, 16, 0.9) 100%);
+    backdrop-filter: blur(8px); /* Resim net olmasın, UI öne çıksın */
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.ambient-light-effects {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none; /* Tıklamaları engellememesi için */
+}
+
+/* Hareket eden neon blob ışıklar */
+.ambient-light-effects::before,
+.ambient-light-effects::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.15;
+    animation: float-blob 20s infinite ease-in-out alternate;
+}
+
+.ambient-light-effects::before {
+    width: 40vw;
+    height: 40vw;
+    background: var(--color-primary);
+    top: -10%;
+    left: -10%;
+}
+
+.ambient-light-effects::after {
+    width: 30vw;
+    height: 30vw;
+    background: var(--color-secondary);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -10s;
+}
+
+/* --------------------------------------------------------------------------
+   4. TİPOGRAFİ (TYPOGRAPHY)
+   -------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-pure);
+}
+
+h1 { font-size: clamp(2rem, 4vw, 3.5rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
+h3 { font-size: clamp(1.2rem, 2vw, 1.8rem); letter-spacing: 0.5px; }
+
+p {
+    margin-bottom: var(--space-md);
+    color: var(--color-text-muted);
+}
+
+strong, b {
+    color: var(--color-text-pure);
+    font-weight: 600;
+}
+
+.micro-text {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* Text Utility Renk Sınıfları */
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-danger { color: var(--color-danger) !important; }
+.text-info { color: var(--color-info) !important; }
+.highlight {
+    color: var(--color-primary);
+    text-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+/* Özel Glitch Efektli Başlık */
+.glitch-text {
+    position: relative;
+    display: inline-block;
+}
+.glitch-text::before, .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -1px 0 var(--color-danger);
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -1px 0 var(--color-primary);
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+/* --------------------------------------------------------------------------
+   5. TEMEL DÜZEN VE CAM EFEKTİ (GLASSMORPHISM)
+   -------------------------------------------------------------------------- */
+#app-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: var(--z-base);
+}
+
+/* Her yerde kullanılacak muazzam Glass Panel Sınıfı */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+}
+
+.box-panel {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+}
+
+/* Ekran Geçiş Yöneticisi */
+.game-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.98);
+    transition: opacity var(--transition-slow), transform var(--transition-slow), visibility var(--transition-slow);
+}
+
+.game-screen.active {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Yardımcı (Utility) Sınıflar */
+.hidden { display: none !important; }
+.scrollable-y { overflow-y: auto; overflow-x: hidden; }
+.scrollable-x { overflow-x: auto; overflow-y: hidden; }
+.mt-2 { margin-top: var(--space-sm); }
+.mt-3 { margin-top: var(--space-md); }
+.mt-4 { margin-top: var(--space-lg); }
+.mb-2 { margin-bottom: var(--space-sm); }
+.w-100 { width: 100%; }
+
+/* --------------------------------------------------------------------------
+   6. UI ELEMANLARI (BUTONLAR, INPUTLAR, SELECTLER)
+   -------------------------------------------------------------------------- */
+/* Siberpunk Esintili Ana Buton */
+.cyber-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition-normal);
+    text-transform: uppercase;
+    z-index: 1;
+}
+
+/* Butonun Parlama (Shine) Efekti */
+.cyber-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    z-index: -1;
+    transition: var(--transition-slow);
+}
+
+.cyber-btn:hover::before {
+    left: 200%;
+    transition: 0.7s ease-in-out;
+}
+
+.cyber-btn:active {
+    transform: scale(0.96);
+}
+
+.cyber-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+/* Buton Çeşitleri */
+.primary-btn {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #0088ff 100%);
+    color: var(--color-bg-darker);
+    box-shadow: 0 4px 15px var(--color-primary-glow);
+}
+.primary-btn:hover {
+    box-shadow: 0 6px 20px var(--color-primary-glow);
+    filter: brightness(1.2);
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-main);
+    border: 1px solid var(--glass-border-light);
+}
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.tertiary-btn {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px dashed var(--glass-border);
+}
+.tertiary-btn:hover {
+    border-style: solid;
+    color: var(--color-text-pure);
+    border-color: var(--color-text-pure);
+}
+
+/* Renk Modifikasyonlu Butonlar */
+.cyber-btn.danger { background: rgba(255, 0, 60, 0.1); border-color: var(--color-danger); color: var(--color-danger); }
+.cyber-btn.danger:hover { background: var(--color-danger); color: white; box-shadow: 0 0 15px var(--color-danger-dim); }
+.cyber-btn.warning { background: rgba(255, 184, 0, 0.1); border-color: var(--color-warning); color: var(--color-warning); }
+
+.cyber-btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    cursor: pointer;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-normal);
+}
+
+/* Form Elemanları (Input & Select) */
+.cyber-input, .cyber-select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-pure);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    transition: var(--transition-normal);
+    outline: none;
+}
+
+.cyber-input:focus, .cyber-select:focus {
+    border-color: var(--color-primary);
+    background: rgba(0, 243, 255, 0.05);
+    box-shadow: 0 0 0 2px var(--color-primary-glow);
+}
+
+.cyber-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+}
+
+/* Select İçin Özel Stil (Karanlık tema uyumu) */
+.cyber-select option {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-main);
+    padding: 10px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.input-group label {
+    font-family: var(--font-heading);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   7. PURE CSS TOOLTIP MİMARİSİ (Zar ve İpuçları için)
+   -------------------------------------------------------------------------- */
+/* .tooltip class'ı eklenen her şeye data-tooltip içindeki yazıyı hoverda gösterir */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::before,
+.tooltip::after {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition-normal);
+    z-index: var(--z-tooltip);
+}
+
+/* Tooltip Metin Kutusu */
+.tooltip::before {
+    content: attr(data-tooltip);
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: max-content;
+    max-width: 250px;
+    padding: 0.5rem 0.8rem;
+    background: var(--color-bg-darker);
+    border: 1px solid var(--color-primary);
+    color: var(--color-text-pure);
+    font-size: 0.75rem;
+    font-family: var(--font-body);
+    text-align: center;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    line-height: 1.4;
+    white-space: normal;
+}
+
+/* Tooltip Üçgeni (Ok işareti) */
+.tooltip::after {
+    content: '';
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    border-width: 8px 8px 0 8px;
+    border-style: solid;
+    border-color: var(--color-primary) transparent transparent transparent;
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   8. YOUTUBE AUDİO / RADYO WIDGET
+   -------------------------------------------------------------------------- */
+#youtube-audio-module {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    background: var(--glass-bg-hover);
+    backdrop-filter: var(--glass-blur-heavy);
+    -webkit-backdrop-filter: var(--glass-blur-heavy);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: var(--z-header);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+/* Küçültüldüğünde çalışacak class */
+#youtube-audio-module.minimized {
+    transform: translateY(calc(100% - 45px));
+}
+
+.audio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(0, 243, 255, 0.1);
+    border-bottom: 1px solid var(--glass-border);
+    cursor: grab; /* Sürüklenebilir algısı */
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.audio-header:active {
+    cursor: grabbing;
+}
+
+#toggle-audio-btn {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+#toggle-audio-btn:hover { background: var(--color-primary); color: #000; }
+
+.audio-content {
+    padding: 15px;
+}
+
+.audio-content .cyber-input { margin-bottom: 10px; }
+.audio-content .cyber-btn-small { width: 100%; margin-bottom: 15px; }
+
+#youtube-iframe-container {
+    width: 100%;
+    height: 0; /* Müzik arka planda çalacağı için iframe gizlenir veya çok küçük tutulur */
+    overflow: hidden;
+    opacity: 0.01;
+    pointer-events: none;
+}
+
+.audio-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.audio-controls button {
+    background: transparent;
+    border: none;
+    color: var(--color-text-pure);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.audio-controls button:hover { color: var(--color-primary); transform: scale(1.1); }
+
+/* Range Slider Özelleştirmesi */
+.vol-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    outline: none;
+}
+.vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    box-shadow: 0 0 5px var(--color-primary-glow);
+}
+
+/* --------------------------------------------------------------------------
+   9. GLOBAL LOADER (SİMÜLASYON YÜKLENİYOR EKRANI)
+   -------------------------------------------------------------------------- */
+.global-loader {
+    position: fixed;
+    inset: 0;
+    background: var(--color-bg-deep);
+    z-index: var(--z-loader);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.global-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+/* Modern Radar/Simülasyon Spinner */
+.spinner {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border: 3px solid rgba(0, 243, 255, 0.1);
+    border-top-color: var(--color-primary);
+    border-bottom-color: var(--color-secondary);
+    border-radius: 50%;
+    animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.spinner::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px; right: 10px; bottom: 10px;
+    border: 3px solid rgba(255, 0, 123, 0.1);
+    border-left-color: var(--color-tertiary);
+    border-radius: 50%;
+    animation: spin-reverse 2s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   10. GPU HIZLANDIRMALI KEYFRAME ANİMASYONLARI
+   -------------------------------------------------------------------------- */
+
+/* Arkaplan hafif kayma animasyonu (Deniz/Uzay hissi) */
+@keyframes slow-pan {
+    0% { transform: scale(1.05) translate(0, 0); }
+    100% { transform: scale(1.1) translate(-2%, -1%); }
+}
+
+/* Ambiyans ışıklarının yüzmesi */
+@keyframes float-blob {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(5vw, 10vh) scale(1.2); }
+    66% { transform: translate(-5vw, 5vh) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Yükleme Ekranı Dönüşleri */
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+@keyframes spin-reverse { 
+    to { transform: rotate(-360deg); } 
+}
+
+/* Buton Nabız (İlerle/Önemli Aksiyon) */
+.pulse-anim {
+    animation: pulse-border 2s infinite;
+}
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 var(--color-primary-glow); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 243, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
+}
+
+/* Glitch Efekti 1 (Ana Metin) */
+@keyframes glitch-anim {
+    0% { clip: rect(44px, 9999px, 86px, 0); transform: translate(-2px); }
+    5% { clip: rect(65px, 9999px, 3px, 0); transform: translate(2px); }
+    10% { clip: rect(10px, 9999px, 92px, 0); transform: translate(-2px); }
+    15% { clip: rect(82px, 9999px, 51px, 0); transform: translate(2px); }
+    20% { clip: rect(31px, 9999px, 14px, 0); transform: translate(-2px); }
+    25% { clip: rect(6px, 9999px, 66px, 0); transform: translate(2px); }
+    30% { clip: rect(98px, 9999px, 21px, 0); transform: translate(-2px); }
+    35% { clip: rect(17px, 9999px, 73px, 0); transform: translate(2px); }
+    40% { clip: rect(55px, 9999px, 44px, 0); transform: translate(-2px); }
+    45% { clip: rect(22px, 9999px, 88px, 0); transform: translate(2px); }
+    50% { clip: rect(77px, 9999px, 33px, 0); transform: translate(-2px); }
+    100% { clip: rect(44px, 9999px, 86px, 0); transform: translate(0); }
+}
+
+/* Glitch Efekti 2 (Gölge Metin) */
+@keyframes glitch-anim-2 {
+    0% { clip: rect(12px, 9999px, 55px, 0); transform: translate(2px); }
+    5% { clip: rect(88px, 9999px, 12px, 0); transform: translate(-2px); }
+    10% { clip: rect(45px, 9999px, 76px, 0); transform: translate(2px); }
+    15% { clip: rect(21px, 9999px, 34px, 0); transform: translate(-2px); }
+    20% { clip: rect(99px, 9999px, 5px, 0); transform: translate(2px); }
+    25% { clip: rect(33px, 9999px, 88px, 0); transform: translate(-2px); }
+    30% { clip: rect(66px, 9999px, 42px, 0); transform: translate(2px); }
+    35% { clip: rect(14px, 9999px, 61px, 0); transform: translate(-2px); }
+    40% { clip: rect(73px, 9999px, 29px, 0); transform: translate(2px); }
+    45% { clip: rect(5px, 9999px, 94px, 0); transform: translate(-2px); }
+    50% { clip: rect(52px, 9999px, 18px, 0); transform: translate(2px); }
+    100% { clip: rect(12px, 9999px, 55px, 0); transform: translate(0); }
+}
+
+/* ==========================================================================
+   ADIM 1 CSS SONU
+   Sıradaki CSS adımında Giriş Ekranı iskeleti, Ana Menü Düzeni (Grid), 
+   Üst Bar ve Sol Menü tasarımlarını (components.css) yapacağız.
+   ========================================================================== */

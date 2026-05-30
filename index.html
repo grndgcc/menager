@@ -254,3 +254,1769 @@
         </section>
         
         <!-- ADIM 1 BURADA SONA ERİYOR. 2. ADIM HTML KODLARI BURANIN HEMEN ALTINDAN DEVAM EDECEK -->
+<!-- ==========================================
+             OYUN İÇİ ANA ARAYÜZ (HUB) BAŞLANGICI
+             (Yeni oyun başladığında veya kayıt yüklendiğinde bu kapsayıcı görünür olur)
+        =========================================== -->
+        <div id="game-ui-container" class="hidden">
+
+            <!-- ÜST BAR (TOP NAVIGATION) -->
+            <header id="top-bar" class="glass-panel">
+                
+                <!-- Navigasyon (Geri/İleri) -->
+                <div class="nav-controls">
+                    <button id="btn-nav-back" class="nav-btn" aria-label="Geri" disabled>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button id="btn-nav-forward" class="nav-btn" aria-label="İleri" disabled>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+                <!-- Oyun İçi Zaman ve Fikstür Bilgisi -->
+                <div class="time-center-console">
+                    <div class="current-date-display">
+                        <span id="game-day" class="date-highlight">01</span>
+                        <span id="game-month">Ağustos</span>
+                        <span id="game-year">2026</span>
+                    </div>
+                    <div class="next-match-info">
+                        <span class="next-match-label">Sıradaki Maç:</span>
+                        <span id="next-match-opponent">Manchester City (Deplasman)</span>
+                        <span id="next-match-competition" class="badge-league">Premier Lig</span>
+                    </div>
+                </div>
+
+                <!-- Menajer Paneli ve İleri Sarma -->
+                <div class="manager-top-panel">
+                    <div class="economy-display tooltip" data-tooltip="Kulüp Kasası ve Bireysel Servet">
+                        <div class="club-money">Kasa: <span id="topbar-club-money" class="money-text">€ 45.000.000</span></div>
+                        <div class="personal-money">Bireysel: <span id="topbar-personal-money" class="money-text">€ 1.200.000</span></div>
+                    </div>
+                    
+                    <div class="manager-mini-profile" id="btn-open-manager-profile" tabindex="0" role="button">
+                        <img id="topbar-manager-img" src="assets/default-manager.png" alt="Menajer Portresi">
+                        <div class="manager-names">
+                            <span id="topbar-manager-name">Pep Guardiola</span>
+                            <span id="topbar-club-name">Arsenal FC</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-continue-time" class="cyber-btn primary-btn pulse-anim">
+                        <span class="btn-text">İLERLE ⏭</span>
+                    </button>
+                </div>
+            </header>
+
+            <div id="main-layout-grid">
+                
+                <!-- SOL MENÜ (SIDEBAR) -->
+                <aside id="sidebar-nav" class="glass-panel">
+                    <nav class="sidebar-menu">
+                        <button class="sidebar-btn active" data-target="screen-squad">
+                            <span class="icon">👥</span> <span class="label">Kadro</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-tactics">
+                            <span class="icon">♟️</span> <span class="label">Taktik</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-training">
+                            <span class="icon">🏋️</span> <span class="label">Antrenman</span>
+                            <span class="notification-badge hidden" id="badge-training">!</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-fixtures">
+                            <span class="icon">📅</span> <span class="label">Fikstür</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-competitions">
+                            <span class="icon">🏆</span> <span class="label">Lig & Kupa</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-transfer">
+                            <span class="icon">🤝</span> <span class="label">Transfer</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-club">
+                            <span class="icon">🏟️</span> <span class="label">Kulüp Bilgisi</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-history">
+                            <span class="icon">📜</span> <span class="label">Tarihçe</span>
+                        </button>
+                        <button class="sidebar-btn" data-target="screen-lifestyle">
+                            <span class="icon">🍸</span> <span class="label">Aktivite / Yaşam</span>
+                        </button>
+                    </nav>
+                    <div class="sidebar-footer">
+                        <div class="inflation-rate">Küresel Enflasyon: <span id="global-inflation-rate">%2.4</span></div>
+                    </div>
+                </aside>
+
+                <!-- İÇERİK ALANI (Tüm sekmeler bu alanda değişecek) -->
+                <div id="content-area">
+
+                    <!-- ==========================================
+                         EKRAN 3: KADRO (SQUAD)
+                    =========================================== -->
+                    <section id="screen-squad" class="game-screen active" aria-label="Takım Kadrosu">
+                        <div class="screen-header glass-panel">
+                            <h2>A TAKIM KADROSU</h2>
+                            
+                            <!-- Görünüm Filtreleri -->
+                            <div class="view-filters">
+                                <label>Görünüm:</label>
+                                <select id="squad-view-selector" class="cyber-select">
+                                    <option value="general">Genel Bakış (Moral, Kondisyon, Değer)</option>
+                                    <option value="attributes">Nitelikler ve Yetenekler (Statlar)</option>
+                                    <option value="stats">Sezon İstatistikleri</option>
+                                    <option value="contract">Sözleşme ve Maaşlar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-container glass-panel scrollable-y">
+                            <table id="squad-table" class="cyber-table hoverable-rows">
+                                <thead>
+                                    <!-- JS ile view selector'a göre bu THEAD yapısı değişecek, default "Genel" -->
+                                    <tr id="squad-thead-row">
+                                        <th class="col-pos">Mevki</th>
+                                        <th class="col-name text-left">Oyuncu Adı</th>
+                                        <th class="col-age">Yaş</th>
+                                        <th class="col-nat">Uyruk</th>
+                                        <th class="col-con tooltip" data-tooltip="Kondisyon %">Kon</th>
+                                        <th class="col-mor tooltip" data-tooltip="Moral %">Mor</th>
+                                        <th class="col-ca tooltip" data-tooltip="Mevcut Yetenek / Potansiyel Yetenek">CA/PA</th>
+                                        <th class="col-value">Değer</th>
+                                        <th class="col-avg tooltip" data-tooltip="Bu sezonki ortalama maç puanı">Ort. Puan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="squad-tbody">
+                                    <!-- JAVASCRIPT BURAYA OYUNCULARI BASACAK -->
+                                    <!-- Örnek Bir Satır Yapısı (JS bu iskeleti klonlayacak) -->
+                                    <!--
+                                    <tr data-player-id="98765" class="player-row">
+                                        <td class="pos-badge pos-st">ST</td>
+                                        <td class="player-name-cell">
+                                            <span class="name">Erling Haaland</span>
+                                            <span class="injury-icon hidden">🚑</span>
+                                        </td>
+                                        <td>25</td>
+                                        <td>🇳🇴</td>
+                                        <td><div class="mini-bar-container"><div class="mini-bar green" style="width: 95%"></div></div></td>
+                                        <td><div class="mini-bar-container"><div class="mini-bar blue" style="width: 100%"></div></div></td>
+                                        <td>185/190</td>
+                                        <td>€ 150M</td>
+                                        <td>8.45</td>
+                                    </tr>
+                                    -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- DİĞER EKRANLAR (Adım 3, 4 ve 5'te eklenecek) -->
+
+                </div> <!-- /#content-area -->
+            </div> <!-- /#main-layout-grid -->
+        </div> <!-- /#game-ui-container -->
+
+        <!-- ==========================================
+             MODAL: DETAYLI OYUNCU PROFİLİ (DEV YAPI)
+             (Herhangi bir oyuncu ismine tıklandığında popup olarak açılır)
+        =========================================== -->
+        <div id="modal-player-profile" class="modal-overlay hidden" aria-modal="true" role="dialog">
+            <div class="modal-content glass-panel ultra-detailed">
+                
+                <!-- Kapatma Tuşu -->
+                <button class="btn-close-modal" aria-label="Kapat">×</button>
+
+                <!-- Profil Üst Bilgi (Header) -->
+                <!-- JS, takım rengine göre style background manipülasyonu yapacak -->
+                <div class="profile-header dynamic-bg" id="profile-header-bg">
+                    
+                    <div class="profile-avatar-box">
+                        <img id="profile-img" src="assets/default-player.png" alt="Oyuncu Portresi">
+                    </div>
+
+                    <div class="profile-main-info">
+                        <h2 id="profile-name">İsim Soyisim</h2>
+                        <h3 id="profile-club-name">Kulüp Adı</h3>
+                        
+                        <div class="profile-badges">
+                            <span class="badge pos-badge" id="profile-position">ST</span>
+                            <span class="badge foot-badge" id="profile-foot" data-tooltip="Baskın Ayak: Maç motorundaki duruma göre şut/pas zorluğunu etkiler.">Sağ Ayak</span>
+                            <span class="badge gender-badge" id="profile-gender">Erkek</span>
+                            <span class="badge special-trait hidden" id="profile-special-trait" data-tooltip="Özel Yetenek: Yıldız Oyuncu (Zarları avantajlı atar)">⭐ Yıldız Oyuncu</span>
+                            <span class="badge status-badge ban hidden" id="profile-ban-status">🟥 2 Maç Cezalı</span>
+                            <span class="badge status-badge injury hidden" id="profile-injury-status">🚑 Çapraz Bağ (4 Hafta)</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-reputation">
+                        <div class="rep-title tooltip" data-tooltip="Tanınırlık (Reputation): Başarılara göre artar, baz maaşı ve transfer değerini katlar. CA'ya etki etmez.">Tanınırlık</div>
+                        <div class="rep-stars" id="profile-reputation-stars">
+                            <!-- JS ile 1-20 arası yıldız veya puan ikonları basılacak -->
+                            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star empty">☆</span><span class="star empty">☆</span>
+                            <span class="rep-number">(14/20)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profil Orta Kısım: Statlar ve İstatistikler -->
+                <div class="profile-body-grid">
+                    
+                    <!-- Sol Kolon: Yaşam, Kondisyon ve Nitelikler -->
+                    <div class="profile-col-left">
+                        
+                        <!-- Moral ve Kondisyon -->
+                        <div class="condition-morale-panel box-panel">
+                            <div class="bar-group tooltip" data-tooltip="Maç içinde Nitelik ve Yetenekleri çarpan olarak düşürür. (Örn: %90 Moral x %80 Kondisyon = Anlık %72 Performans)">
+                                <label>Fiziksel Kondisyon (<span id="profile-cond-val">%100</span>)</label>
+                                <div class="progress-track"><div id="profile-cond-bar" class="progress-fill fill-green" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="bar-group">
+                                <label>Moral Durumu (<span id="profile-morale-val">%100</span>)</label>
+                                <div class="progress-track"><div id="profile-morale-bar" class="progress-fill fill-blue" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="life-status-row">
+                                <span class="label">İlişki Durumu:</span>
+                                <span id="profile-relationship" class="value tooltip" data-tooltip="Evli (+1 Stat), Yeni Ayrılmış (-1 Stat) vb.">Bekar</span>
+                            </div>
+                        </div>
+
+                        <!-- Temel Bilgiler Listesi -->
+                        <div class="basic-info-panel box-panel">
+                            <ul class="info-list">
+                                <li><span class="label">Yaş:</span> <span id="profile-age" class="value">24</span></li>
+                                <li><span class="label">Maaş:</span> <span id="profile-wage" class="value">€ 120.000 / Hafta</span></li>
+                                <li><span class="label">Sözleşme Bitiş:</span> <span id="profile-contract-end" class="value">2028</span></li>
+                                <li><span class="label">Değer:</span> <span id="profile-value" class="value">€ 45.000.000</span></li>
+                                <li><span class="label">CA / PA:</span> <span id="profile-capa" class="value">145 / 160</span></li>
+                            </ul>
+                        </div>
+
+                        <!-- NİTELİKLER (Pasif Statlar) -->
+                        <div class="attributes-panel box-panel">
+                            <h4 class="section-title">NİTELİKLER (Pasif)</h4>
+                            <div class="stat-grid" id="profile-nitelikler-grid">
+                                <!-- JS burayı dolduracak, ancak iskeleti belirliyoruz -->
+                                <div class="stat-item tooltip" data-tooltip="Güç: İkili mücadeleler ve şut hızı hesabında Esneklik ile birleşir.">
+                                    <span class="stat-name">Güç</span><span class="stat-val id-str">15</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Çeviklik: Tepki hızı. Çalım ve kayma hamlelerine bonus ekler.">
+                                    <span class="stat-name">Çeviklik</span><span class="stat-val id-agi">14</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Dayanıklılık: Maç içi kondisyon düşüşünü yavaşlatır, sakatlık şiddet zarını düşürür.">
+                                    <span class="stat-name">Dayanıklılık</span><span class="stat-val id-sta">18</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Zeka: Yapay zekanın karar kalitesini belirler. Taktik uygunluğu artırır.">
+                                    <span class="stat-name">Zeka</span><span class="stat-val id-int">16</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Esneklik: Şut, pas, orta ve top kapma hız/kalite formülünde bölücü fonksiyondur.">
+                                    <span class="stat-name">Esneklik</span><span class="stat-val id-fle">12</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Hız: Topsuz koşu ve top sürme hareket vektörü hızını belirler.">
+                                    <span class="stat-name">Hız</span><span class="stat-val id-pac">17</span>
+                                </div>
+                                <div class="stat-item tooltip" data-tooltip="Profesyonellik: Moral dalgalanmalarını dengeleyip, antrenman gelişim hızını artırır.">
+                                    <span class="stat-name">Profesyonellik</span><span class="stat-val id-pro">19</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Sağ Kolon: Yetenekler ve Detaylı İstatistikler -->
+                    <div class="profile-col-right">
+                        
+                        <!-- YETENEKLER (Aktif Zarlar) -->
+                        <div class="skills-panel box-panel">
+                            <h4 class="section-title">YETENEKLER (Aktif Zarlar)</h4>
+                            <p class="micro-text">Bu yetenekler arka planda rakibin karşı hamlesiyle (Örn: Çalım vs Top Kapma) D20 zarları atılarak çarpışır.</p>
+                            
+                            <div class="stat-grid multi-col" id="profile-yetenekler-grid">
+                                <!-- Top Sürme ve Markaj (Pasif çalışır ama yetenektir) -->
+                                <div class="stat-item"><span class="stat-name">Top Sürme</span><span class="stat-val">16</span></div>
+                                <div class="stat-item"><span class="stat-name">Markaj</span><span class="stat-val">10</span></div>
+                                
+                                <!-- Hücum -->
+                                <div class="stat-item"><span class="stat-name">Çalım</span><span class="stat-val">15</span></div>
+                                <div class="stat-item"><span class="stat-name">Şut</span><span class="stat-val">18</span></div>
+                                <div class="stat-item"><span class="stat-name">Kafa Vuruşu</span><span class="stat-val">14</span></div>
+                                <div class="stat-item"><span class="stat-name">Rövaşata</span><span class="stat-val">8</span></div>
+                                
+                                <!-- Dağıtım -->
+                                <div class="stat-item"><span class="stat-name">Pas</span><span class="stat-val">13</span></div>
+                                <div class="stat-item"><span class="stat-name">Ara Pas</span><span class="stat-val">12</span></div>
+                                <div class="stat-item"><span class="stat-name">Orta Açma</span><span class="stat-val">10</span></div>
+                                
+                                <!-- Savunma & Kaleci -->
+                                <div class="stat-item"><span class="stat-name">Top Kapma</span><span class="stat-val">7</span></div>
+                                <div class="stat-item"><span class="stat-name">Kayma</span><span class="stat-val">5</span></div>
+                                <div class="stat-item"><span class="stat-name">Kaleci Refleksi</span><span class="stat-val">2</span></div>
+                            </div>
+                        </div>
+
+                        <!-- İSTATİSTİKLER (Tabs) -->
+                        <div class="stats-tabs-panel box-panel">
+                            <div class="custom-tabs">
+                                <button class="tab-btn active" data-tab="tab-season-stats">Performans Verileri</button>
+                                <button class="tab-btn" data-tab="tab-transfer-history">Transfer Geçmişi</button>
+                            </div>
+                            
+                            <div class="tab-content-area">
+                                
+                                <!-- Tab 1: Performans -->
+                                <div id="tab-season-stats" class="tab-pane active">
+                                    <div class="season-selector-row">
+                                        <label>Sezon:</label>
+                                        <select id="profile-season-select" class="cyber-select small-select">
+                                            <option value="current">2026-2027 (Mevcut)</option>
+                                            <option value="all-time">Tüm Zamanlar Toplamı</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="stats-data-grid">
+                                        <div class="data-box">M. Çıktığı Maç: <strong id="stat-apps">24</strong></div>
+                                        <div class="data-box">⚽ Gol: <strong id="stat-goals">18</strong></div>
+                                        <div class="data-box">🎯 Asist: <strong id="stat-assists">4</strong></div>
+                                        <div class="data-box">⭐ Ort. Puan: <strong id="stat-rating">8.12</strong></div>
+                                        <div class="data-box">🏃 Koşu (Ort): <strong id="stat-distance">10.2 km</strong></div>
+                                        <div class="data-box">👟 Tutarlı Şut: <strong id="stat-shot-acc">%58</strong></div>
+                                        <div class="data-box">🔀 Çalım Başarısı: <strong id="stat-dribble-acc">%72</strong></div>
+                                        <div class="data-box">🤝 Pas Yüzdesi: <strong id="stat-pass-acc">%85</strong></div>
+                                        <div class="data-box">🛡️ Top Kapma: <strong id="stat-tackle-acc">%40</strong></div>
+                                        <div class="data-box">🤸 Rövaşata Gol: <strong id="stat-bicycle">1</strong></div>
+                                        <!-- Kaleciler için özel statlar JS ile un-hide edilecek -->
+                                        <div class="data-box gk-stat hidden">🧤 Kurtarış: <strong id="stat-saves">%82</strong></div>
+                                        <div class="data-box gk-stat hidden">🥅 Yediği Gol: <strong id="stat-conceded">12</strong></div>
+                                    </div>
+                                </div>
+
+                                <!-- Tab 2: Transfer Geçmişi -->
+                                <div id="tab-transfer-history" class="tab-pane hidden scrollable-y">
+                                    <table class="cyber-table small-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Yıl</th>
+                                                <th>Nereden</th>
+                                                <th>Nereye</th>
+                                                <th>Bonservis</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="profile-transfer-tbody">
+                                            <!-- Örnek Data -->
+                                            <tr><td>2024</td><td>Dortmund</td><td>Man City</td><td>€ 60M</td></tr>
+                                            <tr><td>2022</td><td>Salzburg</td><td>Dortmund</td><td>€ 20M</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div> <!-- /Sağ Kolon -->
+                </div> <!-- /profile-body-grid -->
+
+                <!-- Profil Alt Menü: Aksiyon Tuşları -->
+                <div class="profile-actions-footer">
+                    <div class="action-group" id="player-manager-actions">
+                        <!-- Eğer oyuncu bizim takımımızdaysa -->
+                        <button id="btn-renew-contract" class="cyber-btn tertiary-btn">Sözleşme Yenile</button>
+                        <button id="btn-list-transfer" class="cyber-btn secondary-btn warning">Satış Listesine Koy</button>
+                        <button id="btn-retire-player" class="cyber-btn secondary-btn danger">Emekli Et (32+)</button>
+                    </div>
+                    <div class="action-group hidden" id="player-foreign-actions">
+                        <!-- Eğer oyuncu başka takımındaysa -->
+                        <button id="btn-make-offer" class="cyber-btn primary-btn pulse-anim">Transfer Görüşmesi Başlat</button>
+                    </div>
+                </div>
+
+            </div> <!-- /.modal-content -->
+        </div> <!-- /#modal-player-profile -->
+
+        <!-- ADIM 2 BURADA SONA ERİYOR. 3. ADIM HTML KODLARI BURANIN HEMEN ALTINDAN DEVAM EDECEK -->
+
+
+
+
+        <!-- ==========================================
+                         EKRAN 4: TAKTİK VE DİZİLİŞ (TACTICS)
+                         (11'li 2D Saha, Yedekler ve Sürükle-Bırak)
+                    =========================================== -->
+                    <section id="screen-tactics" class="game-screen hidden" aria-label="Taktik Tahtası">
+                        
+                        <!-- Taktik Üst Menü: Formasyon ve Oyun Anlayışı -->
+                        <div class="tactics-header glass-panel">
+                            <div class="tactics-title-group">
+                                <h2>MAÇ TAKTİĞİ VE DİZİLİŞ</h2>
+                                <p class="micro-text">Sürükle-bırak ile kadronu kur, oyuncularının baskın ayaklarına ve mevkilerine dikkat et.</p>
+                            </div>
+                            
+                            <div class="tactics-controls">
+                                <div class="control-group tooltip" data-tooltip="Takımın dizilişini belirler. Taktiksel Yönetim statınız, oyuncuların bu dizilişe uyumunu artırır.">
+                                    <label for="formation-selector">Formasyon:</label>
+                                    <select id="formation-selector" class="cyber-select">
+                                        <option value="4-4-2">4-4-2 Klasik</option>
+                                        <option value="4-3-3">4-3-3 Hücum</option>
+                                        <option value="4-2-3-1">4-2-3-1 Modern</option>
+                                        <option value="3-5-2">3-5-2 Kanat Organizasyonu</option>
+                                        <option value="5-3-2">5-3-2 Katı Savunma</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="mentality-selector">Oyun Anlayışı:</label>
+                                    <select id="mentality-selector" class="cyber-select">
+                                        <option value="defensive">Savunma (Top Kapma/Kayma zarları bonuslu)</option>
+                                        <option value="balanced" selected>Dengeli</option>
+                                        <option value="attacking">Hücum (Şut/Çalım/Arapas zarları bonuslu)</option>
+                                    </select>
+                                </div>
+
+                                <button id="btn-auto-pick" class="cyber-btn secondary-btn" data-tooltip="Asistan Menajer en iyi 11'i seçer.">Otomatik Seç</button>
+                            </div>
+                        </div>
+
+                        <div class="tactics-main-grid">
+                            
+                            <!-- Sol Taraf: 2D Saha Görünümü -->
+                            <div class="pitch-container glass-panel">
+                                <div id="tactics-pitch" class="football-pitch">
+                                    <!-- Saha Çizgileri (CSS ile şekillendirilecek dekoratif elementler) -->
+                                    <div class="pitch-lines">
+                                        <div class="center-circle"></div>
+                                        <div class="center-line"></div>
+                                        <div class="penalty-box top">
+                                            <div class="six-yard-box"></div>
+                                            <div class="penalty-arc"></div>
+                                        </div>
+                                        <div class="penalty-box bottom">
+                                            <div class="six-yard-box"></div>
+                                            <div class="penalty-arc"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- İLK 11 OYUNCU SLOTLARI (JS tarafından X,Y koordinatları formasyona göre güncellenecek) -->
+                                    <!-- draggable="true" ve dropzone ayarları yapıldı -->
+                                    <div id="pitch-slots-wrapper">
+                                        <!-- Örnek Slot Yapısı (11 Adet) -->
+                                        <div class="pitch-slot" data-slot-id="1" data-slot-type="gk" style="top: 85%; left: 50%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">1</div>
+                                                <div class="player-shirt"></div>
+                                                <div class="player-name-plate">Kaleci Seç</div>
+                                                <div class="player-condition-bar"><div class="fill" style="width:0%"></div></div>
+                                            </div>
+                                        </div>
+                                        <!-- Defans Hattı -->
+                                        <div class="pitch-slot" data-slot-id="2" data-slot-type="df" style="top: 70%; left: 20%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">2</div><div class="player-shirt"></div><div class="player-name-plate">Sol Bek</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="3" data-slot-type="df" style="top: 72%; left: 40%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">3</div><div class="player-shirt"></div><div class="player-name-plate">Stoper</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="4" data-slot-type="df" style="top: 72%; left: 60%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">4</div><div class="player-shirt"></div><div class="player-name-plate">Stoper</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="5" data-slot-type="df" style="top: 70%; left: 80%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">5</div><div class="player-shirt"></div><div class="player-name-plate">Sağ Bek</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <!-- Orta Saha Hattı -->
+                                        <div class="pitch-slot" data-slot-id="6" data-slot-type="mf" style="top: 45%; left: 20%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">6</div><div class="player-shirt"></div><div class="player-name-plate">Sol Kanat</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="7" data-slot-type="mf" style="top: 50%; left: 40%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">7</div><div class="player-shirt"></div><div class="player-name-plate">Orta Saha</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="8" data-slot-type="mf" style="top: 50%; left: 60%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">8</div><div class="player-shirt"></div><div class="player-name-plate">Orta Saha</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="9" data-slot-type="mf" style="top: 45%; left: 80%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">9</div><div class="player-shirt"></div><div class="player-name-plate">Sağ Kanat</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <!-- Forvet Hattı -->
+                                        <div class="pitch-slot" data-slot-id="10" data-slot-type="fw" style="top: 25%; left: 35%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">10</div><div class="player-shirt"></div><div class="player-name-plate">Forvet</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                        <div class="pitch-slot" data-slot-id="11" data-slot-type="fw" style="top: 25%; left: 65%;">
+                                            <div class="player-node empty" draggable="true">
+                                                <div class="player-number">11</div><div class="player-shirt"></div><div class="player-name-plate">Forvet</div><div class="player-condition-bar"><div class="fill"></div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Takım Talimatları Paneli (Saha altında) -->
+                                <div class="team-instructions">
+                                    <div class="instruction-col">
+                                        <label>Pas Stili:</label>
+                                        <select id="inst-passing" class="cyber-select small-select">
+                                            <option value="short">Kısa Paslar (Top Kaybı Az, Hız Düşük)</option>
+                                            <option value="mixed" selected>Karışık</option>
+                                            <option value="direct">Doğrudan/Uzun (Top Kaybı Yüksek, Hızlı Atak)</option>
+                                        </select>
+                                    </div>
+                                    <div class="instruction-col">
+                                        <label>Baskı Şiddeti:</label>
+                                        <select id="inst-pressing" class="cyber-select small-select">
+                                            <option value="low">Kendi Yarı Sahanda Bekle</option>
+                                            <option value="medium" selected>Dengeli Baskı</option>
+                                            <option value="high">Tam Saha Baskı (Dayanıklılık Hızlı Düşer)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sağ Taraf: Yedekler ve Kadro Dışı Oyuncular Listesi -->
+                            <div class="tactics-roster-panel glass-panel">
+                                
+                                <div class="roster-section">
+                                    <h3 class="section-title">YEDEKLER (Maks 9, Maç İçi 5 Değişiklik)</h3>
+                                    <div id="bench-slots" class="roster-list dropzone">
+                                        <!-- JS ile 9 adet yedek slotu buraya basılacak -->
+                                        <!-- Her slot sürüklenebilir (draggable) oyuncu barındırabilir -->
+                                    </div>
+                                </div>
+
+                                <div class="roster-section fill-remaining-height">
+                                    <h3 class="section-title">KADRO DIŞI / REZERV OYUNCULAR</h3>
+                                    <div id="reserves-list" class="roster-list scrollable-y dropzone">
+                                        <!-- Kalan tüm oyuncular buraya basılacak -->
+                                        <!-- Örnek bir liste elemanı -->
+                                        <!-- 
+                                        <div class="roster-player-item" draggable="true" data-player-id="123">
+                                            <span class="pos-badge pos-gk">GK</span>
+                                            <span class="name">Alisson Becker</span>
+                                            <span class="foot-icon right-foot tooltip" data-tooltip="Sağ Ayak">R</span>
+                                            <div class="mini-cond"><div style="width:100%"></div></div>
+                                        </div> 
+                                        -->
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ==========================================
+                         EKRAN 5: ANTRENMAN VE GELİŞİM (TRAINING)
+                         (Zeka, Profesyonellik ve Menajer Puanı Çarpanlı Sistem)
+                    =========================================== -->
+                    <section id="screen-training" class="game-screen hidden" aria-label="Antrenman Tesisleri">
+                        
+                        <div class="training-header glass-panel">
+                            <div class="header-content">
+                                <h2>ANTRENMAN MERKEZİ</h2>
+                                <p>Antrenman yoğunluğu arttıkça oyuncuların maç arası kazandıkları kondisyon miktarı düşer. Genç yetenekler (CA/PA farkı yüksek olanlar) Zeka ve Profesyonellik statlarına oranla daha hızlı gelişir. 32 yaşından sonra fiziksel düşüşler başlar.</p>
+                            </div>
+                            
+                            <div class="manager-training-stats box-panel">
+                                <div class="stat-row">
+                                    <span>Menajer Antrenman Puanı:</span>
+                                    <strong id="display-manager-train-score" class="highlight">15/20</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <span>Tesis Kalitesi:</span>
+                                    <strong id="display-club-facilities" class="highlight">Modern (Seviye 4)</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mevki Bazlı Antrenman Grupları Grid'i -->
+                        <div class="training-groups-grid scrollable-y">
+                            
+                            <!-- 1. KALECİLER -->
+                            <div class="training-group-card glass-panel" data-group="goalkeepers">
+                                <div class="group-header">
+                                    <h3>🧤 Kaleciler</h3>
+                                    <span class="player-count">3 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector tooltip" data-tooltip="Hangi aktif yeteneğe odaklanılacak?">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="kaleci_refleksi">Kaleci Refleksi (Düşük Zar Zorluğu)</option>
+                                            <option value="pas">Geriden Oyun Kurma (Pas)</option>
+                                            <option value="ceviklik">Çeviklik (Pasif)</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <label>Antrenman Şiddeti:</label>
+                                        <!-- Otomatik sağa sola kayan veya manuel ayarlanabilen range slider -->
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="50">
+                                        <div class="intensity-labels">
+                                            <span>Dinlenme (%0)</span>
+                                            <span class="intensity-val-display">Dengeli (%50)</span>
+                                            <span>Ağır (%100)</span>
+                                        </div>
+                                    </div>
+                                    <div class="energy-warning">
+                                        ⚡ Maç Arası Kondisyon Yenilenmesi: <span class="energy-regen-rate text-warning">-15%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. STOPERLER -->
+                            <div class="training-group-card glass-panel" data-group="center_backs">
+                                <div class="group-header">
+                                    <h3>🛡️ Stoperler</h3>
+                                    <span class="player-count">4 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="top_kapma">Top Kapma</option>
+                                            <option value="kayma">Kayarak Müdahale</option>
+                                            <option value="kafa_vurusu">Kafa Vuruşu</option>
+                                            <option value="guc">Güç Gelişimi (Pasif)</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="60">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Yoğun (%60)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-warning">-20%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 3. BEKLER -->
+                            <div class="training-group-card glass-panel" data-group="fullbacks">
+                                <div class="group-header">
+                                    <h3>🏃‍♂️ Bekler / Kanat Bekler</h3>
+                                    <span class="player-count">4 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="orta_acma">Orta Açma</option>
+                                            <option value="dayaniklilik">Dayanıklılık & Motor</option>
+                                            <option value="hiz">Hız & Patlayıcılık</option>
+                                            <option value="top_kapma">Savunma Pozisyonu</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="50">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Dengeli (%50)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-warning">-15%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 4. DEFANSİF ORTA SAHALAR -->
+                            <div class="training-group-card glass-panel" data-group="defensive_mids">
+                                <div class="group-header">
+                                    <h3>🧱 Defansif Orta Sahalar</h3>
+                                    <span class="player-count">2 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="markaj">Markaj (Pasif Baskı)</option>
+                                            <option value="top_kapma">Top Kapma</option>
+                                            <option value="pas">Kısa Pas Dağıtımı</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="40">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Hafif (%40)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-success">-10%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 5. MERKEZ / İKİ YÖNLÜ ORTA SAHALAR -->
+                            <div class="training-group-card glass-panel" data-group="central_mids">
+                                <div class="group-header">
+                                    <h3>⚙️ İki Yönlü Orta Sahalar</h3>
+                                    <span class="player-count">3 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="pas">Oyun Kurma (Pas)</option>
+                                            <option value="arapas">Derin Darbe (Arapas)</option>
+                                            <option value="dayaniklilik">Box-to-Box (Dayanıklılık)</option>
+                                            <option value="uzaktan_sut">Uzaktan Şut</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="70">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Sert (%70)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-danger">-30%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 6. OFANSİF ORTA SAHALAR -->
+                            <div class="training-group-card glass-panel" data-group="attacking_mids">
+                                <div class="group-header">
+                                    <h3>✨ Ofansif Orta Sahalar</h3>
+                                    <span class="player-count">2 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="arapas">Asist (Arapas)</option>
+                                            <option value="calim">Dribbling (Çalım)</option>
+                                            <option value="ceviklik">Kıvraklık (Çeviklik)</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="50">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Dengeli (%50)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-warning">-15%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 7. KANAT OYUNCULARI -->
+                            <div class="training-group-card glass-panel" data-group="wingers">
+                                <div class="group-header">
+                                    <h3>🚀 Kanat Oyuncuları</h3>
+                                    <span class="player-count">4 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="hiz">Parlama (Hız)</option>
+                                            <option value="orta_acma">Kanat Organizasyonu (Orta)</option>
+                                            <option value="calim">Birebirde Geçiş (Çalım)</option>
+                                            <option value="top_surme">Top Sürme (Pasif)</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="65">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Yoğun (%65)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-danger">-25%</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 8. FORVETLER -->
+                            <div class="training-group-card glass-panel" data-group="strikers">
+                                <div class="group-header">
+                                    <h3>🎯 Forvetler</h3>
+                                    <span class="player-count">3 Oyuncu</span>
+                                </div>
+                                <div class="group-controls">
+                                    <div class="focus-selector">
+                                        <label>Odak Yetenek:</label>
+                                        <select class="cyber-select target-attribute-select">
+                                            <option value="sut">Bitiricilik (Şut)</option>
+                                            <option value="kafa_vurusu">Hava Topu (Kafa Vuruşu)</option>
+                                            <option value="rovasata">Akrobatik (Rövaşata)</option>
+                                            <option value="guc">Fiziksel Üstünlük (Güç)</option>
+                                        </select>
+                                    </div>
+                                    <div class="intensity-slider-group">
+                                        <input type="range" class="cyber-range intensity-range" min="0" max="100" value="50">
+                                        <div class="intensity-labels"><span>Dinlenme</span><span class="intensity-val-display">Dengeli (%50)</span><span>Ağır</span></div>
+                                    </div>
+                                    <div class="energy-warning">⚡ Kondisyon Yenilenmesi: <span class="energy-regen-rate text-warning">-15%</span></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- ADIM 3 BURADA SONA ERİYOR. 4. ADIM HTML KODLARI BURANIN HEMEN ALTINDAN DEVAM EDECEK -->
+
+
+
+        <!-- ==========================================
+                         EKRAN 6: FİKSTÜR VE TAKVİM (FIXTURES)
+                         (Zaman akışı ve maç sonuçları)
+                    =========================================== -->
+                    <section id="screen-fixtures" class="game-screen hidden" aria-label="Fikstür ve Maç Takvimi">
+                        
+                        <div class="screen-header glass-panel">
+                            <div class="header-content">
+                                <h2>FİKSTÜR VE TAKVİM</h2>
+                                <p>Takımının bu sezonki lig ve kupa takvimi. Rakiplerini analiz et ve rotasyonunu buna göre planla.</p>
+                            </div>
+                            
+                            <!-- Fikstür Filtreleri -->
+                            <div class="view-filters">
+                                <label>Turnuva:</label>
+                                <select id="fixture-filter-competition" class="cyber-select">
+                                    <option value="all">Tüm Maçlar</option>
+                                    <option value="league">Sadece Lig</option>
+                                    <option value="cup">Sadece Kupa / Süper Kupa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="fixture-layout-grid">
+                            <!-- Sol Taraf: Aylık Mini Takvim -->
+                            <div class="calendar-widget glass-panel">
+                                <div class="calendar-header">
+                                    <button id="cal-prev-month" class="icon-btn">◀</button>
+                                    <h3 id="cal-month-year">Ağustos 2026</h3>
+                                    <button id="cal-next-month" class="icon-btn">▶</button>
+                                </div>
+                                <div class="calendar-days-grid" id="calendar-days-container">
+                                    <!-- JS tarafından gün kutuları buraya basılacak. Maç olan günlerde nokta/ikon olacak -->
+                                    <div class="day-name">Pzt</div><div class="day-name">Sal</div><div class="day-name">Çar</div>
+                                    <div class="day-name">Per</div><div class="day-name">Cum</div><div class="day-name">Cmt</div><div class="day-name">Paz</div>
+                                    <!-- Örnek Günler -->
+                                    <div class="day-box past">1</div><div class="day-box past">2</div><div class="day-box today match-day tooltip" data-tooltip="Maç Günü: Man City (D)">3</div>
+                                </div>
+                                <div class="calendar-legend">
+                                    <span class="legend-item"><span class="dot match-league"></span> Lig Maçı</span>
+                                    <span class="legend-item"><span class="dot match-cup"></span> Kupa Maçı</span>
+                                </div>
+                            </div>
+
+                            <!-- Sağ Taraf: Maç Listesi -->
+                            <div class="fixture-list-container glass-panel scrollable-y">
+                                <table class="cyber-table match-list-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tarih</th>
+                                            <th>Turnuva</th>
+                                            <th class="text-right">Ev Sahibi</th>
+                                            <th class="text-center">Skor</th>
+                                            <th class="text-left">Deplasman</th>
+                                            <th>Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fixture-tbody">
+                                        <!-- Örnek Oynanmış Maç -->
+                                        <tr class="played-match win">
+                                            <td>01 Ağu</td>
+                                            <td><span class="badge-league">Premier Lig</span></td>
+                                            <td class="text-right"><strong>Arsenal</strong></td>
+                                            <td class="text-center score-cell">3 - 1</td>
+                                            <td class="text-left">Chelsea</td>
+                                            <td><span class="status-played">Oynandı</span></td>
+                                        </tr>
+                                        <!-- Örnek Gelecek Maç -->
+                                        <tr class="upcoming-match next-match-highlight">
+                                            <td>08 Ağu</td>
+                                            <td><span class="badge-league">Premier Lig</span></td>
+                                            <td class="text-right">Man City</td>
+                                            <td class="text-center score-cell">v</td>
+                                            <td class="text-left"><strong>Arsenal</strong></td>
+                                            <td><button class="cyber-btn-small primary-btn" id="btn-play-next-match">Maça Git</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ==========================================
+                         EKRAN 7: LİG VE KUPA (COMPETITIONS)
+                         (Play-off sistemli lig tablosu ve eleme ağacı)
+                    =========================================== -->
+                    <section id="screen-competitions" class="game-screen hidden" aria-label="Turnuvalar ve Puan Durumu">
+                        
+                        <div class="comp-tabs-header glass-panel">
+                            <div class="custom-tabs">
+                                <button class="tab-btn active" data-tab="tab-league">Lig Puan Durumu</button>
+                                <button class="tab-btn" data-tab="tab-playoffs">Play-Off Grupları</button>
+                                <button class="tab-btn" data-tab="tab-cup">Kupa Ağacı</button>
+                            </div>
+                            <div class="league-selector">
+                                <label>Görüntülenen Lig:</label>
+                                <select id="view-league-select" class="cyber-select">
+                                    <option value="1">1. Lig (Elit)</option>
+                                    <option value="2">2. Lig</option>
+                                    <option value="3">3. Lig</option>
+                                    <option value="4">4. Lig</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="comp-content-area">
+                            
+                            <!-- TAB 1: ANA LİG TABLOSU -->
+                            <div id="tab-league" class="tab-pane active glass-panel scrollable-y">
+                                <div class="table-info-banner">
+                                    <span>Normal Sezon (18 Maç). İlk 4 Şampiyonluk Play-Off'una, Son 4 Küme Düşme Play-Off'una kalır.</span>
+                                </div>
+                                <table id="league-standings-table" class="cyber-table standings-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-pos">Sıra</th>
+                                            <th class="col-team text-left">Takım Adı</th>
+                                            <th class="col-num tooltip" data-tooltip="Oynanan Maç">O</th>
+                                            <th class="col-num tooltip" data-tooltip="Galibiyet">G</th>
+                                            <th class="col-num tooltip" data-tooltip="Beraberlik">B</th>
+                                            <th class="col-num tooltip" data-tooltip="Mağlubiyet">M</th>
+                                            <th class="col-num tooltip" data-tooltip="Atılan Gol">AG</th>
+                                            <th class="col-num tooltip" data-tooltip="Yenilen Gol">YG</th>
+                                            <th class="col-num tooltip" data-tooltip="Averaj">AV</th>
+                                            <th class="col-pts tooltip" data-tooltip="Puan">P</th>
+                                            <th class="col-form">Form (Son 5)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="league-tbody">
+                                        <!-- JS ile 10 takım buraya basılacak. İlk 4 yeşil, son 4 kırmızı şeritli olacak -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- TAB 2: PLAY-OFF GRUPLARI -->
+                            <div id="tab-playoffs" class="tab-pane hidden scrollable-y">
+                                <div class="playoff-warning-banner tooltip" data-tooltip="Play-Off başlarken normal sezon puanları 2'ye bölünür (Buçuklular üste yuvarlanır). Oynanan maçlar ana ligden bağımsızdır.">
+                                    ⚠️ DİKKAT: PLAY-OFF AŞAMASINDA PUANLAR YARIYA BÖLÜNÜR!
+                                </div>
+                                
+                                <div class="playoff-grids-container">
+                                    <!-- Üst Sıra Play-Off (Şampiyonluk/Yükselme) -->
+                                    <div class="playoff-group box-panel">
+                                        <h3 class="group-title text-success">🏆 Üst Sıra Play-Off (Şampiyonluk / Yükselme)</h3>
+                                        <table class="cyber-table standings-table mini-table">
+                                            <thead>
+                                                <tr><th>Sıra</th><th class="text-left">Takım</th><th>O</th><th>AV</th><th>P</th></tr>
+                                            </thead>
+                                            <tbody id="playoff-top-tbody">
+                                                <!-- İlk 4 takımın yarıya bölünmüş puanlı hali -->
+                                            </tbody>
+                                        </table>
+                                        <div class="playoff-rules-text">1. Ligin lideri Şampiyon olur. Alt liglerde ilk 2 sıradakiler bir üst lige yükselir.</div>
+                                    </div>
+
+                                    <!-- Alt Sıra Play-Off (Küme Düşme/Kalma) -->
+                                    <div class="playoff-group box-panel">
+                                        <h3 class="group-title text-danger">🔻 Alt Sıra Play-Off (Ligde Kalma Mücadelesi)</h3>
+                                        <table class="cyber-table standings-table mini-table">
+                                            <thead>
+                                                <tr><th>Sıra</th><th class="text-left">Takım</th><th>O</th><th>AV</th><th>P</th></tr>
+                                            </thead>
+                                            <tbody id="playoff-bottom-tbody">
+                                                <!-- Son 4 takımın yarıya bölünmüş puanlı hali -->
+                                            </tbody>
+                                        </table>
+                                        <div class="playoff-rules-text">Grubu en alt sırada bitiren 2 takım bir alt lige düşer.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 3: KUPA AĞACI -->
+                            <div id="tab-cup" class="tab-pane hidden scrollable-x">
+                                <div class="cup-bracket-container" id="cup-bracket-ui">
+                                    <!-- Çeyrek Final -->
+                                    <div class="bracket-round" id="round-quarter">
+                                        <h4 class="round-title">Çeyrek Final</h4>
+                                        <!-- Maç Kutuları JS ile basılacak, örnek iskelet: -->
+                                        <!--
+                                        <div class="bracket-match">
+                                            <div class="team-row winner"><span class="name">Arsenal</span><span class="score">2</span></div>
+                                            <div class="team-row"><span class="name">Liverpool</span><span class="score">0</span></div>
+                                        </div>
+                                        -->
+                                    </div>
+                                    
+                                    <!-- Yarı Final -->
+                                    <div class="bracket-round" id="round-semi">
+                                        <h4 class="round-title">Yarı Final</h4>
+                                    </div>
+                                    
+                                    <!-- Final -->
+                                    <div class="bracket-round" id="round-final">
+                                        <h4 class="round-title">FİNAL</h4>
+                                    </div>
+                                    
+                                    <!-- Süper Kupa (Finalin yanında ayrı bir box) -->
+                                    <div class="bracket-round super-cup-round">
+                                        <h4 class="round-title gold-text">SÜPER KUPA</h4>
+                                        <div class="bracket-match super-cup-match" id="super-cup-box">
+                                            <div class="cup-label">Lig Şampiyonu</div>
+                                            <div class="team-row"><span class="name" id="super-league-champ">Bekleniyor</span><span class="score">-</span></div>
+                                            <div class="cup-label">Kupa Şampiyonu</div>
+                                            <div class="team-row"><span class="name" id="super-cup-champ">Bekleniyor</span><span class="score">-</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- ==========================================
+                         EKRAN 8: TRANSFER VE SCOUTING (TRANSFER)
+                         (Cyberfoot stili baz değer + RPG zar pazarlığı)
+                    =========================================== -->
+                    <section id="screen-transfer" class="game-screen hidden" aria-label="Transfer Merkezi">
+                        
+                        <div class="transfer-layout-grid">
+                            
+                            <!-- Sol: Oyuncu Arama ve Filtreleme -->
+                            <div class="transfer-search-panel glass-panel">
+                                <div class="panel-header">
+                                    <h3>🔍 Gözlemci Ağı (Scouting)</h3>
+                                </div>
+                                <div class="search-filters">
+                                    <div class="input-group">
+                                        <label>Oyuncu Adı:</label>
+                                        <input type="text" id="search-player-name" class="cyber-input" placeholder="İsim ara...">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Mevki:</label>
+                                        <select id="search-position" class="cyber-select">
+                                            <option value="all">Tümü</option>
+                                            <option value="gk">Kaleci</option>
+                                            <option value="df">Defans</option>
+                                            <option value="mf">Orta Saha</option>
+                                            <option value="fw">Forvet</option>
+                                        </select>
+                                    </div>
+                                    <div class="filter-row">
+                                        <div class="input-group half">
+                                            <label>Min CA:</label>
+                                            <input type="number" id="search-min-ca" class="cyber-input" min="1" max="200" value="100">
+                                        </div>
+                                        <div class="input-group half">
+                                            <label>Maks Yaş:</label>
+                                            <input type="number" id="search-max-age" class="cyber-input" min="16" max="40" value="35">
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Maksimum Fiyat (€):</label>
+                                        <input type="number" id="search-max-price" class="cyber-input" step="1000000" placeholder="Sınır yok">
+                                    </div>
+                                    <button id="btn-execute-search" class="cyber-btn primary-btn w-100">OYUNCU ARA</button>
+                                </div>
+
+                                <div class="search-results mt-4 scrollable-y" style="max-height: 400px;">
+                                    <table class="cyber-table hoverable-rows small-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Mevki</th>
+                                                <th class="text-left">İsim (Takım)</th>
+                                                <th>CA/PA</th>
+                                                <th>Değer</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transfer-search-results">
+                                            <!-- JS sonuçları buraya basacak. Satıra tıklanınca sağdaki pazarlık paneli açılır. -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Sağ: Transfer Görüşmesi / Pazarlık Masası -->
+                            <div class="transfer-negotiation-panel glass-panel">
+                                <div class="panel-header">
+                                    <h3>🤝 Transfer Pazarlığı</h3>
+                                </div>
+                                
+                                <!-- Eğer oyuncu seçilmemişse bu alan görünür -->
+                                <div id="no-player-selected-msg" class="empty-state">
+                                    <span class="icon">📋</span>
+                                    <p>Görüşmelere başlamak için sol taraftan bir oyuncu seçin.</p>
+                                </div>
+
+                                <!-- Oyuncu seçildiğinde bu alan görünür (JS ile hidden class kaldırılır) -->
+                                <div id="active-negotiation-box" class="negotiation-box hidden">
+                                    
+                                    <div class="target-player-info box-panel">
+                                        <img id="neg-player-img" src="assets/default-player.png" alt="Oyuncu" class="mini-avatar">
+                                        <div class="info-texts">
+                                            <h4 id="neg-player-name">Jude Bellingham</h4>
+                                            <div class="sub-info"><span id="neg-player-club">Real Madrid</span> • <span id="neg-player-age">22 Yaş</span> • <span id="neg-player-pos">Orta Saha</span></div>
+                                            <div class="val-info">Baz Değer: <strong id="neg-player-base-value" class="text-success">€ 85.000.000</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="negotiation-mechanics">
+                                        <p class="micro-text text-warning tooltip" data-tooltip="Menajerinizin Transfer Yeteneği karşı takımın yeteneğiyle kıyaslanacak. Zayıfsanız baz değerin 3 katına kadar fiyat isteyebilirler.">
+                                            ⚡ Sizin Transfer Statınız (<span id="neg-my-stat">15</span>) ⚔️ Karşı Menajer Statı (<span id="neg-ai-stat">?</span>)
+                                        </p>
+
+                                        <div class="ai-response-box" id="ai-negotiation-chat">
+                                            <!-- Yapay zeka menajerin mesajları buraya gelecek -->
+                                            <p class="ai-msg">"Oyuncumuz kulübün kilit isimlerinden. Onu ucuza bırakmaya niyetimiz yok. Beklentimiz en azından baz değerinin çok üzerinde."</p>
+                                        </div>
+
+                                        <div class="offer-inputs">
+                                            <label>Teklifiniz (€):</label>
+                                            <input type="number" id="input-transfer-offer" class="cyber-input massive-input" step="500000" min="0">
+                                            
+                                            <div class="action-buttons mt-2">
+                                                <button id="btn-submit-offer" class="cyber-btn primary-btn pulse-anim">TEKLİFİ İLET</button>
+                                                <button id="btn-cancel-negotiation" class="cyber-btn secondary-btn danger">MASADAN KALK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ==========================================
+                         EKRAN 9: KULÜP BİLGİLERİ VE EKONOMİ (CLUB)
+                         (Tesisler, İtibar, Para Akışı, Efsaneler)
+                    =========================================== -->
+                    <section id="screen-club" class="game-screen hidden" aria-label="Kulüp Merkezi">
+                        
+                        <div class="club-header glass-panel">
+                            <div class="club-brand">
+                                <div class="club-colors-shield" id="club-color-shield" style="background: linear-gradient(135deg, #ff0000, #ffffff);"></div>
+                                <div class="club-title-group">
+                                    <h2 id="club-page-name">Arsenal FC</h2>
+                                    <h3 class="club-manager-name">Menajer: <span id="club-page-manager">Pep Guardiola</span></h3>
+                                </div>
+                            </div>
+                            
+                            <div class="club-reputation tooltip" data-tooltip="Kulüp İtibarı: Şampiyonluklarla ve Ort. CA'nın üstünde oyuncu alarak artar. Bilet geliri ve transfer cazibesini belirler.">
+                                <span class="rep-label">Dünya Çapında İtibar:</span>
+                                <div class="rep-stars" id="club-page-stars">
+                                    <!-- JS dolduracak -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="club-grid-layout">
+                            
+                            <!-- Sol Kolon: Tesisler ve Altyapı -->
+                            <div class="club-facilities box-panel glass-panel">
+                                <h3 class="section-title">🏢 Stadyum ve Tesisler</h3>
+                                
+                                <!-- Stadyum -->
+                                <div class="facility-item">
+                                    <div class="fac-info">
+                                        <span class="fac-icon">🏟️</span>
+                                        <div class="fac-texts">
+                                            <h4>Stadyum Kapasitesi</h4>
+                                            <p id="club-stadium-cap">60,000 Koltuk (Seviye 4)</p>
+                                        </div>
+                                    </div>
+                                    <button class="cyber-btn-small secondary-btn" id="btn-upgrade-stadium" data-tooltip="Kapasiteyi artırır, bilet gelirlerini katlar. Maliyet: € 25M">Geliştir</button>
+                                </div>
+
+                                <!-- Antrenman Tesisleri -->
+                                <div class="facility-item">
+                                    <div class="fac-info">
+                                        <span class="fac-icon">🏋️</span>
+                                        <div class="fac-texts">
+                                            <h4>Antrenman Tesisleri</h4>
+                                            <p id="club-training-fac">Gelişmiş Tesisler (Seviye 3)</p>
+                                        </div>
+                                    </div>
+                                    <button class="cyber-btn-small secondary-btn" id="btn-upgrade-training" data-tooltip="Oyuncuların stat gelişim hızını doğrudan artırır. Maliyet: € 15M">Geliştir</button>
+                                </div>
+
+                                <!-- Altyapı (Emekli olanların yerine gelen 16 yaş regenler için) -->
+                                <div class="facility-item">
+                                    <div class="fac-info">
+                                        <span class="fac-icon">👶</span>
+                                        <div class="fac-texts">
+                                            <h4>Altyapı Akademisi</h4>
+                                            <p id="club-youth-fac">Vasat Akademi (Seviye 2)</p>
+                                        </div>
+                                    </div>
+                                    <button class="cyber-btn-small secondary-btn" id="btn-upgrade-youth" data-tooltip="Emekli oyuncuların yerine eklenecek 16 yaş regen oyuncuların başlangıç CA/PA'sını artırır. Maliyet: € 10M">Geliştir</button>
+                                </div>
+                            </div>
+
+                            <!-- Orta Kolon: Finans ve Ekonomi -->
+                            <div class="club-finance box-panel glass-panel">
+                                <h3 class="section-title">📊 Finansal Durum</h3>
+                                
+                                <div class="finance-overview">
+                                    <div class="fin-box balance">
+                                        <span>Güncel Bakiye</span>
+                                        <strong id="club-finance-balance" class="text-success">€ 45.000.000</strong>
+                                    </div>
+                                    <div class="fin-box debt tooltip" data-tooltip="Bakiye eksiye düşerse faiz işlemeye başlar. Uzun süre borçta kalırsanız kovulursunuz.">
+                                        <span>Kulüp Borcu</span>
+                                        <strong id="club-finance-debt" class="text-danger">€ 0</strong>
+                                    </div>
+                                </div>
+
+                                <div class="finance-details mt-3">
+                                    <h4>Aylık Tahmini Gelir/Gider</h4>
+                                    <ul class="finance-list">
+                                        <li><span>+ Sponsorluk & TV:</span> <span id="fin-income-sponsor" class="text-success">€ 2.500.000</span></li>
+                                        <li><span>+ Bilet Gelirleri:</span> <span id="fin-income-tickets" class="text-success">€ 1.800.000</span></li>
+                                        <li><span>- Oyuncu Maaşları:</span> <span id="fin-expense-wages" class="text-danger">€ 3.200.000</span></li>
+                                        <li><span>- Tesis Bakımı:</span> <span id="fin-expense-fac" class="text-danger">€ 400.000</span></li>
+                                        <li><span>- Kredi Faizi:</span> <span id="fin-expense-interest" class="text-danger">€ 0</span></li>
+                                    </ul>
+                                    <div class="finance-net">
+                                        <span>Aylık Net Kar/Zarar:</span>
+                                        <strong id="fin-net-monthly" class="text-success">+ € 700.000</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sağ Kolon: Kadro Yapısı ve Efsaneler -->
+                            <div class="club-legends box-panel glass-panel scrollable-y">
+                                <h3 class="section-title">🌟 Kadro Raporu & Efsaneler</h3>
+                                
+                                <div class="squad-summary">
+                                    <div class="summary-row"><span>Kadro Ortalama CA:</span> <strong id="club-avg-ca">142</strong></div>
+                                    <div class="summary-row tooltip" data-tooltip="Eğer ortalama CA altı bir oyuncu alırsanız, taraftar tepkisiyle itibarınız az da olsa düşebilir."><span>Hedeflenen Kadro Kalitesi:</span> <strong>140+</strong></div>
+                                </div>
+
+                                <div class="legends-hall mt-3">
+                                    <h4>Klüp Efsaneleri (Hall of Fame)</h4>
+                                    <ul id="club-legends-list" class="legends-list">
+                                        <!-- Oyuncular başarılarına göre emekli olunca buraya eklenecek -->
+                                        <li class="empty-list-msg">Henüz bir efsane yaratılmadı.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- ADIM 4 BURADA SONA ERİYOR. 5. VE SON HTML ADIMI BURANIN HEMEN ALTINDAN DEVAM EDECEK -->
+
+<!-- ==========================================
+                         EKRAN 10: TARİHÇE VE REKORLAR (HISTORY)
+                         (Dünya futbol tarihinin kayıt defteri)
+                    =========================================== -->
+                    <section id="screen-history" class="game-screen hidden" aria-label="Tarihçe ve Rekorlar Merkezi">
+                        
+                        <div class="history-header glass-panel">
+                            <div class="header-content">
+                                <h2>📜 DÜNYA FUTBOL TARİHÇESİ</h2>
+                                <p>Tüm zamanların rekorları, efsanevi maçlar, gol ve asist krallıkları ile sezon ödülleri burada saklanır.</p>
+                            </div>
+                            <!-- Tarihçe Alt Sekmeleri -->
+                            <div class="custom-tabs history-tabs">
+                                <button class="tab-btn active" data-tab="hist-records">Genel Rekorlar</button>
+                                <button class="tab-btn" data-tab="hist-top-players">Tüm Zamanların En İyileri</button>
+                                <button class="tab-btn" data-tab="hist-awards">Sezonluk Ödüller</button>
+                                <button class="tab-btn" data-tab="hist-hall-of-fame">Menajer Hall of Fame</button>
+                            </div>
+                        </div>
+
+                        <div class="history-content-area glass-panel scrollable-y">
+                            
+                            <!-- TAB 1: GENEL REKORLAR -->
+                            <div id="hist-records" class="tab-pane active">
+                                <h3 class="section-title">🏆 Tarihi Maç ve Turnuva Rekorları</h3>
+                                <div class="records-grid">
+                                    <!-- Maç Rekorları -->
+                                    <div class="record-card box-panel">
+                                        <div class="record-icon">💥</div>
+                                        <h4>En Farklı Galibiyet</h4>
+                                        <p id="rec-biggest-win" class="record-value">Veri Bekleniyor...</p>
+                                        <small id="rec-biggest-win-detail">Sezon başladığında güncellenecek.</small>
+                                    </div>
+                                    <div class="record-card box-panel">
+                                        <div class="record-icon">⚽</div>
+                                        <h4>En Gollü Maç</h4>
+                                        <p id="rec-most-goals-match" class="record-value">Veri Bekleniyor...</p>
+                                        <small id="rec-most-goals-match-detail">-</small>
+                                    </div>
+                                    <div class="record-card box-panel">
+                                        <div class="record-icon">⚡</div>
+                                        <h4>En Hızlı Gol</h4>
+                                        <p id="rec-fastest-goal" class="record-value">Veri Bekleniyor...</p>
+                                        <small id="rec-fastest-goal-detail">-</small>
+                                    </div>
+                                    
+                                    <!-- Kulüp Rekorları -->
+                                    <div class="record-card box-panel">
+                                        <div class="record-icon">👑</div>
+                                        <h4>En Çok Lig Şampiyonu</h4>
+                                        <p id="rec-most-league-titles" class="record-value">Veri Bekleniyor...</p>
+                                    </div>
+                                    <div class="record-card box-panel">
+                                        <div class="record-icon">🏆</div>
+                                        <h4>En Çok Kupa Kazanan</h4>
+                                        <p id="rec-most-cup-titles" class="record-value">Veri Bekleniyor...</p>
+                                    </div>
+                                    
+                                    <!-- Ceza Rekorları -->
+                                    <div class="record-card box-panel danger-record">
+                                        <div class="record-icon">🟥</div>
+                                        <h4>En Çok Kırmızı Kart Yiyen</h4>
+                                        <p id="rec-most-reds" class="record-value">Veri Bekleniyor...</p>
+                                    </div>
+                                    <div class="record-card box-panel warning-record">
+                                        <div class="record-icon">🟨</div>
+                                        <h4>En Çok Sarı Kart Yiyen</h4>
+                                        <p id="rec-most-yellows" class="record-value">Veri Bekleniyor...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 2: TÜM ZAMANLARIN EN İYİLERİ (İstatistik Liderleri) -->
+                            <div id="hist-top-players" class="tab-pane hidden">
+                                <div class="top-lists-container">
+                                    <!-- Golcüler Listesi (İlk 20) -->
+                                    <div class="list-column box-panel">
+                                        <h3 class="list-title text-success">⚽ Tüm Zamanların En Golcüleri (Top 20)</h3>
+                                        <table class="cyber-table small-table list-table">
+                                            <thead><tr><th>Sıra</th><th class="text-left">Oyuncu</th><th>Gol</th></tr></thead>
+                                            <tbody id="history-top-scorers">
+                                                <!-- JS ile 20 satır basılacak -->
+                                                <tr><td colspan="3" class="text-center">Kayıtlar hesaplanıyor...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Asist Kralları (İlk 20) -->
+                                    <div class="list-column box-panel">
+                                        <h3 class="list-title text-info">🎯 Tüm Zamanların En Çok Asist Yapanları</h3>
+                                        <table class="cyber-table small-table list-table">
+                                            <thead><tr><th>Sıra</th><th class="text-left">Oyuncu</th><th>Asist</th></tr></thead>
+                                            <tbody id="history-top-assists">
+                                                <tr><td colspan="3" class="text-center">Kayıtlar hesaplanıyor...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Kaleci Kurtarış Yüzdesi (İlk 20) -->
+                                    <div class="list-column box-panel">
+                                        <h3 class="list-title text-warning">🧤 En Yüksek Kurtarış Yüzdesi (Min 50 Maç)</h3>
+                                        <table class="cyber-table small-table list-table">
+                                            <thead><tr><th>Sıra</th><th class="text-left">Kaleci</th><th>Kurtarış %</th></tr></thead>
+                                            <tbody id="history-top-gks">
+                                                <tr><td colspan="3" class="text-center">Kayıtlar hesaplanıyor...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 3: SEZONLUK ÖDÜLLER -->
+                            <div id="hist-awards" class="tab-pane hidden">
+                                <div class="awards-filter-row">
+                                    <label>Yıl Seçimi:</label>
+                                    <select id="history-award-year" class="cyber-select">
+                                        <option value="2026">2026 Sezonu</option>
+                                        <!-- Yeni yıllar geldikçe eklenecek -->
+                                    </select>
+                                </div>
+                                <div class="awards-grid mt-3">
+                                    <!-- Yılın Oyuncusu -->
+                                    <div class="award-card gold-award box-panel">
+                                        <div class="award-icon">⭐</div>
+                                        <h4>Yılın Oyuncusu (Ballon d'Or)</h4>
+                                        <div class="award-winner" id="award-poty">Sezon Sonu Açıklanacak</div>
+                                        <p class="award-stats" id="award-poty-stats">-</p>
+                                    </div>
+                                    <!-- Mevki Ödülleri -->
+                                    <div class="award-card silver-award box-panel">
+                                        <div class="award-icon">🧤</div>
+                                        <h4>Yılın Kalecisi</h4>
+                                        <div class="award-winner" id="award-gkoty">Sezon Sonu Açıklanacak</div>
+                                    </div>
+                                    <div class="award-card silver-award box-panel">
+                                        <div class="award-icon">🛡️</div>
+                                        <h4>Yılın Savunmacısı</h4>
+                                        <div class="award-winner" id="award-dfoty">Sezon Sonu Açıklanacak</div>
+                                    </div>
+                                    <div class="award-card silver-award box-panel">
+                                        <div class="award-icon">⚙️</div>
+                                        <h4>Yılın Orta Sahası</h4>
+                                        <div class="award-winner" id="award-mfoty">Sezon Sonu Açıklanacak</div>
+                                    </div>
+                                    <div class="award-card silver-award box-panel">
+                                        <div class="award-icon">🎯</div>
+                                        <h4>Yılın Forveti</h4>
+                                        <div class="award-winner" id="award-fwoty">Sezon Sonu Açıklanacak</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 4: MENAJER HALL OF FAME -->
+                            <div id="hist-hall-of-fame" class="tab-pane hidden">
+                                <div class="hall-of-fame-list">
+                                    <table class="cyber-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sıra</th>
+                                                <th class="text-left">Menajer (Siz dahil tüm NPC'ler)</th>
+                                                <th>Kariyer Puanı</th>
+                                                <th>Kazanılan Kupalar</th>
+                                                <th>Stil Puanı</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="history-hall-of-fame-tbody">
+                                            <!-- JS ile tüm menajerler puan sırasına göre dizilecek -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- ==========================================
+                         EKRAN 11: YAŞAM STİLİ VE AKTİVİTE (LIFESTYLE)
+                         (Sims/New Star Soccer RPG Öğeleri)
+                    =========================================== -->
+                    <section id="screen-lifestyle" class="game-screen hidden" aria-label="Bireysel Yaşam ve Aktivite">
+                        
+                        <div class="lifestyle-header glass-panel">
+                            <div class="life-profile">
+                                <img id="life-manager-img" src="assets/default-manager.png" alt="Siz" class="life-avatar">
+                                <div class="life-titles">
+                                    <h2>BİREYSEL YAŞAM VE KARİYER</h2>
+                                    <p>Kazandığınız maaşı harcayarak stil puanınızı artırın. Stil puanı kulüpler arası itibarınızı ve transferlerdeki saygınlığınızı (Reputation) artırır.</p>
+                                </div>
+                            </div>
+                            <div class="life-stats box-panel">
+                                <div class="stat-col">
+                                    <span class="label">Şahsi Servet:</span>
+                                    <span class="val text-success" id="life-net-worth">€ 1.200.000</span>
+                                </div>
+                                <div class="stat-col">
+                                    <span class="label tooltip" data-tooltip="Stil Puanı yüksek menajerlerin oyuncular üzerindeki moral etkisi daha yüksektir. Şöhretinizi artırır.">Stil Puanı (Reputation):</span>
+                                    <span class="val highlight" id="life-style-points">120 / 1000</span>
+                                </div>
+                                <div class="stat-col">
+                                    <span class="label">Aylık Sabit Gider:</span>
+                                    <span class="val text-danger" id="life-monthly-expense">€ 5.000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lifestyle-grid">
+                            
+                            <!-- İLİŞKİ VE AİLE SİMÜLASYONU -->
+                            <div class="relationship-panel glass-panel box-panel">
+                                <h3 class="section-title">❤️ İlişki Durumu</h3>
+                                <p class="micro-text">İlişkiler statlara (+1/-1) etki eder. Bu durum hem sizin hem de tüm futbolcularınızın arka plan simülasyonunda geçerlidir.</p>
+                                
+                                <div class="current-relationship-box" id="manager-relationship-box">
+                                    <div class="partner-info">
+                                        <div class="partner-avatar">👤</div>
+                                        <div class="partner-details">
+                                            <h4 id="life-partner-name">Bekar</h4>
+                                            <span id="life-partner-status" class="status-badge">Yalnızlık Modu</span>
+                                        </div>
+                                    </div>
+                                    <div class="relationship-bar-container hidden" id="life-relationship-bar-wrapper">
+                                        <label>İlişki Sağlığı:</label>
+                                        <div class="progress-track"><div id="life-relationship-bar" class="progress-fill fill-pink" style="width: 50%;"></div></div>
+                                    </div>
+                                </div>
+
+                                <div class="relationship-actions mt-3">
+                                    <button class="cyber-btn-small primary-btn" id="btn-find-partner">Sevgili Ara (Gider: € 1.000)</button>
+                                    <button class="cyber-btn-small secondary-btn hidden" id="btn-buy-gift-partner">Hediye Al (Gider: € 5.000)</button>
+                                    <button class="cyber-btn-small secondary-btn warning hidden" id="btn-propose-marriage">Evlilik Teklif Et (Gider: € 50.000)</button>
+                                    <button class="cyber-btn-small secondary-btn danger hidden" id="btn-cheat-partner">Aldat (Riskli!)</button>
+                                </div>
+
+                                <div class="relationship-events-log mt-3 scrollable-y" style="max-height: 150px;">
+                                    <h5>Son Dedikodular (Takım İçi)</h5>
+                                    <ul class="event-log-list" id="lifestyle-event-log">
+                                        <!-- JS arka planda ayrılan/evlenen oyuncuları buraya basacak -->
+                                        <li><em>Sistem: Oyuncuların ve sizin ilişki dinamikleriniz maç haftalarıyla simüle edilmektedir.</em></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- MÜLK VE EŞYA SATIN ALMA -->
+                            <div class="assets-store-panel glass-panel box-panel">
+                                <h3 class="section-title">🛒 Lüks Yaşam Mağazası</h3>
+                                <p class="micro-text">Mülkler sabit bir vergi gideri yaratır ancak size kalıcı stil puanı sağlar.</p>
+                                
+                                <div class="custom-tabs store-tabs mb-2">
+                                    <button class="tab-btn active" data-tab="store-realestate">Emlak & Ev</button>
+                                    <button class="tab-btn" data-tab="store-vehicles">Araçlar</button>
+                                    <button class="tab-btn" data-tab="store-staff">Kişisel Personel</button>
+                                </div>
+
+                                <div class="store-content scrollable-y" style="max-height: 350px;">
+                                    
+                                    <!-- Emlak Sekmesi -->
+                                    <div id="store-realestate" class="tab-pane active">
+                                        <div class="store-item">
+                                            <div class="item-icon">🏢</div>
+                                            <div class="item-info">
+                                                <h4>Şehir Merkezi Daire</h4>
+                                                <span>Fiyat: € 250.000 | Aylık Gider: € 1.000</span>
+                                                <span class="bonus text-success">+50 Stil Puanı</span>
+                                            </div>
+                                            <button class="cyber-btn-small primary-btn btn-buy-asset" data-id="house_1" data-price="250000">Satın Al</button>
+                                        </div>
+                                        <div class="store-item">
+                                            <div class="item-icon">🏡</div>
+                                            <div class="item-info">
+                                                <h4>Lüks Banliyö Villası</h4>
+                                                <span>Fiyat: € 1.500.000 | Aylık Gider: € 5.000</span>
+                                                <span class="bonus text-success">+300 Stil Puanı</span>
+                                            </div>
+                                            <button class="cyber-btn-small primary-btn btn-buy-asset" data-id="house_2" data-price="1500000">Satın Al</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Araçlar Sekmesi -->
+                                    <div id="store-vehicles" class="tab-pane hidden">
+                                        <div class="store-item">
+                                            <div class="item-icon">🚗</div>
+                                            <div class="item-info">
+                                                <h4>Spor Araba</h4>
+                                                <span>Fiyat: € 150.000 | Aylık Gider: € 500</span>
+                                                <span class="bonus text-success">+40 Stil Puanı</span>
+                                            </div>
+                                            <button class="cyber-btn-small primary-btn btn-buy-asset" data-id="car_1" data-price="150000">Satın Al</button>
+                                        </div>
+                                        <div class="store-item">
+                                            <div class="item-icon">🏎️</div>
+                                            <div class="item-info">
+                                                <h4>Ultra Lüks Hypercar</h4>
+                                                <span>Fiyat: € 2.500.000 | Aylık Gider: € 10.000</span>
+                                                <span class="bonus text-success">+500 Stil Puanı</span>
+                                            </div>
+                                            <button class="cyber-btn-small primary-btn btn-buy-asset" data-id="car_2" data-price="2500000">Satın Al</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kişisel Personel Sekmesi -->
+                                    <div id="store-staff" class="tab-pane hidden">
+                                        <div class="store-item tooltip" data-tooltip="Tüm maç içi stat zarlarınıza geçici +1 bonus sağlar, ancak her ay maaşını ödersiniz.">
+                                            <div class="item-icon">👨‍🍳</div>
+                                            <div class="item-info">
+                                                <h4>Özel Aşçı ve Hizmetli</h4>
+                                                <span>Aylık Maaş Gideri: € 15.000</span>
+                                                <span class="bonus text-warning">Tüm Statlara +1 Çarpan</span>
+                                            </div>
+                                            <button class="cyber-btn-small secondary-btn btn-hire-staff" data-id="staff_1">İşe Al</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- OYUNCU ETKİLEŞİMİ (HEDİYE ALMA) -->
+                            <div class="player-interaction-panel glass-panel box-panel">
+                                <h3 class="section-title">🎁 Takım İçi Moraller</h3>
+                                <p class="micro-text">Şahsi bütçenizle oyuncularınıza hediyeler alarak düsen morallerini hızla toparlayabilirsiniz.</p>
+                                
+                                <div class="input-group">
+                                    <label>Hediye Alınacak Oyuncu:</label>
+                                    <select id="gift-player-select" class="cyber-select">
+                                        <!-- JS ile takım kadrosu buraya yüklenecek -->
+                                    </select>
+                                </div>
+                                <div class="input-group mt-2">
+                                    <label>Hediye Türü:</label>
+                                    <select id="gift-type-select" class="cyber-select">
+                                        <option value="watch" data-cost="10000">Lüks Saat (Gider: € 10.000 | Moral: +%10)</option>
+                                        <option value="car" data-cost="80000">Spor Araba (Gider: € 80.000 | Moral: +%40)</option>
+                                        <option value="house" data-cost="500000">Villa (Gider: € 500.000 | Moral: Maksimum)</option>
+                                    </select>
+                                </div>
+                                <button id="btn-send-gift" class="cyber-btn primary-btn mt-3 w-100">Hediyeyi Gönder</button>
+                            </div>
+
+                        </div>
+                    </section>
+
+        <!-- ==========================================
+             2D CANLI MAÇ MOTORU ARAYÜZÜ (FULL OVERLAY)
+             (Maç günü geldiğinde tüm ekranı kaplayan yapay zeka/motor alanı)
+        =========================================== -->
+        <div id="match-day-overlay" class="match-overlay hidden" aria-modal="true" role="dialog">
+            
+            <div class="match-ui-container">
+                
+                <!-- ÜST: Skorboard ve Dakika -->
+                <div class="match-scoreboard glass-panel">
+                    <div class="team-block home-team">
+                        <h2 id="match-home-name">Ev Sahibi Takım</h2>
+                        <div class="team-color-indicator" id="match-home-color"></div>
+                    </div>
+                    
+                    <div class="score-block">
+                        <div class="timer tooltip" data-tooltip="Maç Simülasyon Zamanı">
+                            <span id="match-minute">00</span><span class="blink">:</span><span id="match-second">00</span>
+                        </div>
+                        <div class="goals">
+                            <span id="match-home-score">0</span>
+                            <span class="divider">-</span>
+                            <span id="match-away-score">0</span>
+                        </div>
+                        <div class="match-phase" id="match-phase-display">1. YARI</div>
+                    </div>
+
+                    <div class="team-block away-team">
+                        <div class="team-color-indicator" id="match-away-color"></div>
+                        <h2 id="match-away-name">Deplasman Takım</h2>
+                    </div>
+                </div>
+
+                <!-- ORTA: 2D Saha (Canvas) ve Maç İstatistikleri -->
+                <div class="match-center-stage">
+                    
+                    <!-- Canlı İstatistikler (Sol) -->
+                    <div class="match-live-stats glass-panel">
+                        <h3>Maç Verileri</h3>
+                        <div class="stat-row-match">
+                            <span id="stat-home-pos">%50</span>
+                            <label>Topla Oynama</label>
+                            <span id="stat-away-pos">%50</span>
+                        </div>
+                        <div class="stat-row-match">
+                            <span id="stat-home-shots">0</span>
+                            <label>Toplam Şut</label>
+                            <span id="stat-away-shots">0</span>
+                        </div>
+                        <div class="stat-row-match">
+                            <span id="stat-home-shots-target">0</span>
+                            <label>İsabetli Şut</label>
+                            <span id="stat-away-shots-target">0</span>
+                        </div>
+                        <div class="stat-row-match">
+                            <span id="stat-home-xg">0.00</span>
+                            <label>Beklenen Gol (xG)</label>
+                            <span id="stat-away-xg">0.00</span>
+                        </div>
+                        <div class="stat-row-match mt-2 text-warning">
+                            <span id="stat-home-yellows">0</span>
+                            <label>Sarı Kart</label>
+                            <span id="stat-away-yellows">0</span>
+                        </div>
+                        <div class="stat-row-match text-danger">
+                            <span id="stat-home-reds">0</span>
+                            <label>Kırmızı Kart</label>
+                            <span id="stat-away-reds">0</span>
+                        </div>
+                    </div>
+
+                    <!-- 2D Saha Çizim Alanı (GPU Hızlandırmalı) -->
+                    <div class="canvas-wrapper pitch-bg">
+                        <!-- JS bu canvas'a 22 oyuncunun X/Y hareketlerini saniyede 60 kare (requestAnimationFrame) ile çizecek -->
+                        <canvas id="match-canvas" width="800" height="500"></canvas>
+                        
+                        <!-- Gol / Olay Bildirimleri Overlay (Örn: GOL! HAALAND!) -->
+                        <div id="match-event-flash" class="event-flash hidden">
+                            <h1 id="flash-title" class="glitch-text">GOL!</h1>
+                            <h2 id="flash-subtitle">Oyuncu Adı (Dk. 45')</h2>
+                        </div>
+                    </div>
+
+                    <!-- Spiker ve Motor Çıktıları (Sağ) -->
+                    <div class="match-commentary glass-panel">
+                        <h3>🎙️ Canlı Anlatım</h3>
+                        <div id="commentary-log" class="commentary-box scrollable-y">
+                            <!-- JS ile üretilen RPG zarlarına dayalı metinler buraya düşecek -->
+                            <p class="comm-line neutral">[00:00] Hakem düdüğünü çalıyor ve zorlu mücadele başlıyor.</p>
+                            <!-- Örnek Spiker satırları: -->
+                            <!-- <p class="comm-line action">[12:45] Çalım zarı atıldı (Zorluk 14). Başarılı! Bellingham rakibini enfes geçti!</p> -->
+                            <!-- <p class="comm-line danger">[15:30] Sert bir müdahale (Kayma zarı 3/20). Hakem faulü veriyor ve sarı kart çıkıyor!</p> -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ALT: Kontrol Barı (Hız ve Taktik) -->
+                <div class="match-control-bar glass-panel">
+                    
+                    <div class="speed-controls tooltip" data-tooltip="Maç motoru Web Worker kullandığından CPU limitinize göre x200'e kadar hızlandırılabilir.">
+                        <label>Simülasyon Hızı:</label>
+                        <button class="cyber-btn-small speed-btn" data-speed="0.5">x0.5</button>
+                        <button class="cyber-btn-small speed-btn active" data-speed="1">x1</button>
+                        <button class="cyber-btn-small speed-btn" data-speed="2">x2</button>
+                        <button class="cyber-btn-small speed-btn" data-speed="5">x5</button>
+                        <button class="cyber-btn-small speed-btn" data-speed="10">x10</button>
+                        <button class="cyber-btn-small speed-btn danger" data-speed="200" data-tooltip="Sadece Spiker Modu (Animasyonlar atlanır, 2 saniyede maç biter)">Hızlı Simüle (x200)</button>
+                    </div>
+
+                    <div class="match-actions">
+                        <button id="btn-pause-match" class="cyber-btn secondary-btn">DURAKLAT ⏸</button>
+                        <button id="btn-match-tactics" class="cyber-btn primary-btn pulse-anim">TAKTİK DEĞİŞİKLİĞİ (Kalan: <span id="subs-left">5</span>)</button>
+                        <!-- Maç bitince bu buton görünecek -->
+                        <button id="btn-end-match-screen" class="cyber-btn primary-btn hidden">SONUCU ONAYLA VE ÇIK</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div> <!-- /#match-day-overlay -->
+
+        <!-- ==========================================
+             MODAL: TAKIM KONUŞMASI (TEAM TALK)
+             (Devre arası ve maç sonu zar mekaniği)
+        =========================================== -->
+        <div id="modal-team-talk" class="modal-overlay hidden" aria-modal="true" role="dialog">
+            <div class="modal-content glass-panel talk-modal">
+                
+                <div class="talk-header">
+                    <h2 id="talk-title">DEVRE ARASI KONUŞMASI</h2>
+                    <p>Soyunma odasındasınız. Menajerinizin 'Moral Verme' yeteneği (<span id="talk-manager-stat" class="highlight">15</span>), seçeceğiniz cümlenin oyuncular üzerindeki zar başarı oranını etkileyecektir.</p>
+                </div>
+
+                <div class="talk-current-status">
+                    Skor: <strong id="talk-score" class="text-warning">1 - 0</strong> | Maçın Gidişatı: <span id="talk-context">Öndeyiz, ancak rakip baskı kuruyor.</span>
+                </div>
+
+                <div class="talk-options">
+                    <!-- Agresif -->
+                    <button class="talk-btn aggressive" data-talk-type="aggressive">
+                        <span class="icon">😡</span>
+                        <div class="talk-texts">
+                            <h4>Agresif Ol</h4>
+                            <p>"Böyle oynamaya devam ederseniz bu maçı veririz! Kendinize gelin!"</p>
+                            <small>Zorluk: Yüksek | Başarılı Olursa: Güç ve Dayanıklılık geçici artar | Başarısız: Moral çöker.</small>
+                        </div>
+                    </button>
+                    
+                    <!-- Sakin/Güven Verici -->
+                    <button class="talk-btn encouraging" data-talk-type="encouraging">
+                        <span class="icon">👏</span>
+                        <div class="talk-texts">
+                            <h4>Cesaretlendir</h4>
+                            <p>"Harika gidiyorsunuz çocuklar, bu maçı alacağınızı biliyorum."</p>
+                            <small>Zorluk: Düşük | Başarılı Olursa: Zeka ve Esneklik artar | Başarısız: Rehavet (Hız düşer).</small>
+                        </div>
+                    </button>
+                    
+                    <!-- Taktiksel/Odaklı -->
+                    <button class="talk-btn tactical" data-talk-type="tactical">
+                        <span class="icon">🧠</span>
+                        <div class="talk-texts">
+                            <h4>Sakin ve Odaklı</h4>
+                            <p>"Plana sadık kalın. Taktiksel disiplini bozmayın, boşlukları değerlendirin."</p>
+                            <small>Zorluk: Orta | Etki: Taktiksel uyum artar, oyuncular pozisyonlarını kaybetmez.</small>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- ZAR SONUCU BURADA GÖRÜNECEK -->
+                <div id="talk-result-box" class="talk-result-box hidden">
+                    <div class="dice-animation">🎲 Zar Atılıyor...</div>
+                    <div class="result-text" id="talk-result-message">
+                        <!-- Örn: "Zar: 18 (Başarılı!). Takımın morali zirveye çıktı!" -->
+                    </div>
+                    <button id="btn-close-talk" class="cyber-btn primary-btn mt-2">SAHAYA DÖN</button>
+                </div>
+
+            </div>
+        </div>
+
+    </main> <!-- /#app-wrapper -->
+
+    <!-- Global Yükleme / Geçiş Ekranı (Oyun simüle edilirken görünür) -->
+    <div id="global-loader" class="global-loader hidden">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h2 class="glitch-text" id="loader-text">SİSTEMLER GÜNCELLENİYOR...</h2>
+            <p>Haftalık maçlar simüle ediliyor, ilişkiler hesaplanıyor.</p>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+        

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="CyberEra Football Manager 2026 - Gelişmiş RPG ve Taktiksel Maç Motorlu Futbol Simülasyonu">
+    <meta name="author" content="AI & Sen">
+    <title>CyberEra Football Manager 2026</title>
+
+    <!-- Google Fonts: Modern ve okunaklı bir oyun arayüzü için font ön yüklemeleri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Dosyalarının Bağlantıları (İleride oluşturacağız) -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/match.css">
+
+    <!-- JavaScript Dosyalarının Bağlantıları (Modüler yapı, defer ile sayfa yüklendikten sonra çalışacak) -->
+    <!-- Çekirdek ve Veri -->
+    <script type="module" src="js/database.js" defer></script>
+    <script type="module" src="js/generator.js" defer></script>
+    <script type="module" src="js/math_d20.js" defer></script>
+    
+    <!-- Sistemler ve Mekanikler -->
+    <script type="module" src="js/economy.js" defer></script>
+    <script type="module" src="js/calendar.js" defer></script>
+    <script type="module" src="js/league_cup.js" defer></script>
+    <script type="module" src="js/club.js" defer></script>
+    <script type="module" src="js/player.js" defer></script>
+    <script type="module" src="js/training.js" defer></script>
+    <script type="module" src="js/transfer.js" defer></script>
+    <script type="module" src="js/manager.js" defer></script>
+    <script type="module" src="js/lifestyle.js" defer></script>
+    <script type="module" src="js/tactics.js" defer></script>
+    <script type="module" src="js/history.js" defer></script>
+    
+    <!-- Maç Motoru (Web Worker destekli) -->
+    <script type="module" src="js/match_core.js" defer></script>
+    <script type="module" src="js/match_ai.js" defer></script>
+    <script type="module" src="js/match_physics.js" defer></script>
+    <script type="module" src="js/match_events.js" defer></script>
+    
+    <!-- Ana Başlatıcı ve UI -->
+    <script type="module" src="js/ui_audio.js" defer></script>
+    <script type="module" src="js/main.js" defer></script>
+</head>
+<body class="theme-dark loading">
+
+    <!-- GLOBAL ARKAPLAN (CSS ile background.png buraya çekilecek ve glassmorphism katmanı uygulanacak) -->
+    <div id="global-bg-container">
+        <div class="glass-overlay"></div>
+        <div class="ambient-light-effects"></div>
+    </div>
+
+    <!-- YOUTUBE MÜZİK ÇALAR (Oyun arkasında gizli veya yarı gizli çalışacak) -->
+    <div id="youtube-audio-module" class="draggable-widget">
+        <div class="audio-header">
+            <span class="icon-music">🎵</span> Radyo FM26
+            <button id="toggle-audio-btn" aria-label="Müziği Aç/Kapat">Küçült</button>
+        </div>
+        <div class="audio-content">
+            <input type="text" id="youtube-playlist-url" placeholder="YouTube Playlist URL Girin..." class="cyber-input">
+            <button id="load-playlist-btn" class="cyber-btn-small">Yükle</button>
+            <div id="youtube-iframe-container">
+                <!-- JS tarafından iframe buraya enjekte edilecek -->
+            </div>
+            <div class="audio-controls">
+                <button id="audio-prev">⏮</button>
+                <button id="audio-play-pause">⏯</button>
+                <button id="audio-next">⏭</button>
+                <input type="range" id="audio-volume" min="0" max="100" value="50" class="vol-slider">
+            </div>
+        </div>
+    </div>
+
+    <!-- ANA OYUN KONTEYNERİ (Tüm ekranlar bu yapının içinde yer alacak) -->
+    <main id="app-wrapper">
+
+        <!-- ==========================================
+             EKRAN 1: GİRİŞ EKRANI (MAIN MENU)
+        =========================================== -->
+        <section id="screen-main-menu" class="game-screen active" aria-label="Ana Menü">
+            <div class="main-menu-content glass-panel">
+                <div class="logo-container">
+                    <h1 class="glitch-text" data-text="CYBERERA">CYBERERA</h1>
+                    <h2 class="sub-logo">FOOTBALL MANAGER 2026</h2>
+                    <div class="version-tag">v1.0.0 Alpha Build</div>
+                </div>
+
+                <div class="menu-actions">
+                    <button id="btn-new-game" class="cyber-btn primary-btn" aria-label="Yeni Oyuna Başla">
+                        <span class="btn-text">YENİ KARİYER</span>
+                        <span class="btn-hover-effect"></span>
+                    </button>
+                    
+                    <div class="load-game-wrapper">
+                        <button id="btn-load-game" class="cyber-btn secondary-btn" aria-label="Kayıt Yükle">
+                            <span class="btn-text">KAYIT AÇ (JSON)</span>
+                        </button>
+                        <!-- Gizli dosya seçici -->
+                        <input type="file" id="save-file-input" accept=".json" class="hidden-input">
+                    </div>
+
+                    <button id="btn-settings" class="cyber-btn tertiary-btn" aria-label="Ayarlar">
+                        <span class="btn-text">AYARLAR</span>
+                    </button>
+                </div>
+                
+                <div class="menu-footer">
+                    <p>Oyun motoru çoklu çekirdek mimarisi ve WebGL grafik işleme altyapısı kullanmaktadır.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             EKRAN 2: MENAJER YARATMA EKRANI
+        =========================================== -->
+        <section id="screen-manager-creation" class="game-screen hidden" aria-label="Menajer Oluşturma">
+            <div class="creation-container glass-panel">
+                
+                <div class="creation-header">
+                    <h2>KİMLİK OLUŞTURULUYOR...</h2>
+                    <p>Dünya futboluna yön verecek yeni dehanın profilini belirle.</p>
+                </div>
+
+                <div class="creation-grid">
+                    
+                    <!-- Sol Kolon: Temel Bilgiler ve Portre -->
+                    <div class="left-col">
+                        <div class="input-group">
+                            <label for="manager-firstname">Adınız</label>
+                            <input type="text" id="manager-firstname" class="cyber-input" placeholder="Örn: Pep">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="manager-lastname">Soyadınız</label>
+                            <input type="text" id="manager-lastname" class="cyber-input" placeholder="Örn: Guardiola">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="manager-gender">Cinsiyet</label>
+                            <select id="manager-gender" class="cyber-select">
+                                <option value="male">Erkek (Fiziksel Maç Konuşması Bonusu)</option>
+                                <option value="female">Kadın (Empati ve Esneklik Bonusu)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="manager-personality">Kişilik Özelliği</label>
+                            <select id="manager-personality" class="cyber-select">
+                                <option value="disciplined">Disiplinli (Antrenman %10 Etkili)</option>
+                                <option value="motivator">Motivatör (Moral kazanımları artar)</option>
+                                <option value="tactician">Taktik Dehası (Maç içi anlık kararlar hızlanır)</option>
+                                <option value="economist">Ekonomist (Yönetim harcamalara tolerans gösterir)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group portrait-group">
+                            <label for="manager-portrait-url">Menajer Resmi (URL)</label>
+                            <input type="url" id="manager-portrait-url" class="cyber-input" placeholder="https://ornek.com/resim.jpg">
+                            <small class="help-text">Görsel 2/3 (Portre) formatında otomatik kırpılacaktır.</small>
+                            <div class="portrait-preview-box">
+                                <!-- Varsayılan silhouette resmi veya js ile yüklenecek resim -->
+                                <img id="portrait-preview-img" src="assets/default-manager.png" alt="Menajer Portresi" class="ratio-2-3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ Kolon: Menajer Nitelikleri (Zar RPG Sistemi) -->
+                    <div class="right-col attributes-panel">
+                        <div class="attributes-header">
+                            <h3>NİTELİK DAĞILIMI</h3>
+                            <div class="points-pool">
+                                Kalan Puan: <span id="remaining-points" class="highlight">52</span>
+                            </div>
+                        </div>
+                        <p class="attribute-lore">Toplam 52 puanı oyun tarzına göre dağıt. Bu yetenekler arka planda atılan D20 zarlarına direkt etki edecektir.</p>
+
+                        <div class="attribute-list">
+                            
+                            <!-- Nitelik: Antrenman -->
+                            <div class="attr-row">
+                                <div class="attr-info">
+                                    <span class="attr-name">Antrenman</span>
+                                    <span class="attr-desc tooltip" data-tooltip="Oyuncuların CA/PA gelişim hızını doğrudan belirler. Kalitesiz bir tesis bile iyi bir antrenörle değerlenir.">ℹ️</span>
+                                </div>
+                                <div class="attr-controls">
+                                    <button class="btn-decrease" data-target="attr-training">-</button>
+                                    <input type="number" id="attr-training" value="1" min="1" max="20" readonly>
+                                    <button class="btn-increase" data-target="attr-training">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Nitelik: Taktiksel Yönetim -->
+                            <div class="attr-row">
+                                <div class="attr-info">
+                                    <span class="attr-name">Taktiksel Yönetim</span>
+                                    <span class="attr-desc tooltip" data-tooltip="11 altındaysa oyuncuların maç içi Zeka statından düşer. 11 üstündeyse Zeka statlarına bonus ekler. Maç motoruna direkt etki.">ℹ️</span>
+                                </div>
+                                <div class="attr-controls">
+                                    <button class="btn-decrease" data-target="attr-tactics">-</button>
+                                    <input type="number" id="attr-tactics" value="1" min="1" max="20" readonly>
+                                    <button class="btn-increase" data-target="attr-tactics">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Nitelik: Transfer Görüşmeleri -->
+                            <div class="attr-row">
+                                <div class="attr-info">
+                                    <span class="attr-name">Transfer Becerisi</span>
+                                    <span class="attr-desc tooltip" data-tooltip="Pazarlıklarda atılan zarlara etki eder. 20 puana sahipseniz baz fiyata oyuncu alabilirsiniz. Düşükse 3 katı fiyat çekerler.">ℹ️</span>
+                                </div>
+                                <div class="attr-controls">
+                                    <button class="btn-decrease" data-target="attr-transfer">-</button>
+                                    <input type="number" id="attr-transfer" value="1" min="1" max="20" readonly>
+                                    <button class="btn-increase" data-target="attr-transfer">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Nitelik: Moral Verme -->
+                            <div class="attr-row">
+                                <div class="attr-info">
+                                    <span class="attr-name">Moral ve Motivasyon</span>
+                                    <span class="attr-desc tooltip" data-tooltip="Maç öncesi, devre arası ve maç sonu takım konuşmalarında seçtiğiniz cümlenin zarda başarılı olma ihtimalini artırır.">ℹ️</span>
+                                </div>
+                                <div class="attr-controls">
+                                    <button class="btn-decrease" data-target="attr-morale">-</button>
+                                    <input type="number" id="attr-morale" value="1" min="1" max="20" readonly>
+                                    <button class="btn-increase" data-target="attr-morale">+</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <!-- Takım Seçimi (Rastgele atandığı için burada sadece lig seçimi veya 'Rastgele' bilgisi verebiliriz. Tasarıma göre ilk takım sistem tarafından ortalama CA ile verilecek) -->
+                        <div class="starting-club-info">
+                            <h4>Kariyer Başlangıcı</h4>
+                            <p>Veritabanı oluşturulduktan sonra kulübünüz ve rastgele oluşturulan kadronuz (Mevcut CA'ya uygun olarak) size tebliğ edilecektir.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="creation-footer">
+                    <button id="btn-back-to-main" class="cyber-btn secondary-btn">GERİ DÖN</button>
+                    <button id="btn-finish-creation" class="cyber-btn primary-btn disabled" disabled>
+                        VERİTABANINI OLUŞTUR VE BAŞLA
+                    </button>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- ADIM 1 BURADA SONA ERİYOR. 2. ADIM HTML KODLARI BURANIN HEMEN ALTINDAN DEVAM EDECEK -->

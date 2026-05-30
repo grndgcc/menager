@@ -1,0 +1,703 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   CYBERERA FOOTBALL MANAGER 2026 - MATCH & TACTICS CSS (ADIM 3 - SON)
+   Yazar: AI & Sen
+   Açıklama: 2D Taktik Tahtası, Futbol Sahası Geometrisi, Sürükle-Bırak Formları,
+   Canlı Maç Motoru Arayüzü, Radar/Canvas Grafikleri, Spiker Paneli ve
+   Takım Konuşması (RPG Zar) Animasyonları.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 2D TAKTİK TAHTASI (THE PITCH) & GEOMETRİ
+   -------------------------------------------------------------------------- */
+
+.tactics-main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-md);
+    height: calc(100vh - 180px);
+}
+
+.pitch-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* Saha Çim Görünümü ve Geometrisi */
+.football-pitch {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 2 / 3; /* Dikey saha görünümü */
+    background: 
+        /* Orta noktanın parlaması */
+        radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 60%),
+        /* Kesilmiş çim çizgileri (Yatay) */
+        repeating-linear-gradient(
+            0deg,
+            #1b5e20 0px,
+            #1b5e20 40px,
+            #2e7d32 40px,
+            #2e7d32 80px
+        );
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Saha Çizgileri Ana Katmanı */
+.pitch-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none; /* Çizgiler tıklamayı engellemesin */
+    z-index: 1;
+}
+
+/* Orta Çizgi */
+.center-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%);
+}
+
+/* Orta Yuvarlak */
+.center-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.center-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Ceza Sahaları */
+.penalty-box {
+    position: absolute;
+    left: 50%;
+    width: 50%;
+    height: 16%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transform: translateX(-50%);
+}
+.penalty-box.top {
+    top: 0;
+    border-top: none;
+}
+.penalty-box.bottom {
+    bottom: 0;
+    border-bottom: none;
+}
+
+/* Altı Pas (Six Yard Box) */
+.six-yard-box {
+    position: absolute;
+    left: 50%;
+    width: 40%;
+    height: 40%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transform: translateX(-50%);
+}
+.penalty-box.top .six-yard-box { top: 0; border-top: none; }
+.penalty-box.bottom .six-yard-box { bottom: 0; border-bottom: none; }
+
+/* Ceza Yayı (Penalty Arc) */
+.penalty-arc {
+    position: absolute;
+    left: 50%;
+    width: 80px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transform: translateX(-50%);
+}
+.penalty-box.top .penalty-arc {
+    bottom: -40px;
+    border-top: none;
+    border-radius: 0 0 80px 80px;
+}
+.penalty-box.bottom .penalty-arc {
+    top: -40px;
+    border-bottom: none;
+    border-radius: 80px 80px 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. OYUNCU FORMA (NODE) VE SÜRÜKLE-BIRAK (DRAG) TASARIMI
+   -------------------------------------------------------------------------- */
+#pitch-slots-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+}
+
+/* Sahadaki X/Y Koordinat Kutuları */
+.pitch-slot {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top 0.5s ease, left 0.5s ease; /* Formasyon değiştiğinde kayarak gitme */
+}
+
+/* Dragging (Sürükleme) sırasında Dropzone (Bırakma Alanı) efekti */
+.dropzone.drag-over,
+.pitch-slot.drag-over {
+    background: rgba(0, 243, 255, 0.3);
+    border: 2px dashed var(--color-primary);
+    box-shadow: 0 0 15px var(--color-primary-glow);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Oyuncu Node (Forma) */
+.player-node {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    background: radial-gradient(circle at top left, #ffffff, #cccccc);
+    border-radius: 50%;
+    border: 2px solid var(--color-bg-darker);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.6);
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    user-select: none;
+}
+
+/* Boş Slot / Yedek slotu */
+.player-node.empty {
+    background: rgba(0,0,0,0.5);
+    border: 2px dashed rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.3);
+    box-shadow: none;
+}
+
+.player-node:not(.empty):hover {
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.8), 0 0 10px var(--color-primary-glow);
+    z-index: 10;
+}
+
+.player-node:active, .player-node.is-dragging {
+    cursor: grabbing;
+    transform: scale(1.05);
+    filter: opacity(0.8);
+}
+
+.player-number {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-bg-darker);
+    z-index: 2;
+}
+
+/* İsim Plakası */
+.player-name-plate {
+    position: absolute;
+    bottom: -22px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    border: 1px solid rgba(255,255,255,0.2);
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Forma Altı Mini Kondisyon */
+.player-condition-bar {
+    position: absolute;
+    bottom: -6px;
+    width: 80%;
+    height: 4px;
+    background: red;
+    border-radius: 2px;
+    border: 1px solid black;
+    overflow: hidden;
+}
+.player-condition-bar .fill {
+    height: 100%;
+    background: var(--color-success);
+}
+
+/* Yedekler ve Rezervler Listesi (Sağ Panel) */
+.tactics-roster-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+}
+
+.roster-list {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 100px;
+}
+
+.roster-player-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: grab;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.roster-player-item:hover {
+    background: rgba(0, 243, 255, 0.1);
+    transform: translateX(5px);
+    border-left: 3px solid var(--color-primary);
+}
+
+.roster-player-item.is-dragging {
+    opacity: 0.5;
+    background: var(--color-primary);
+}
+
+.foot-icon {
+    font-size: 0.7rem;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.5);
+    color: var(--color-text-muted);
+}
+.foot-icon.right-foot { border-bottom: 2px solid var(--color-info); }
+.foot-icon.left-foot { border-bottom: 2px solid var(--color-tertiary); }
+.foot-icon.both-foot { border-bottom: 2px solid var(--color-success); }
+
+/* --------------------------------------------------------------------------
+   3. CANLI MAÇ MOTORU EKRANI (MATCH DAY OVERLAY)
+   -------------------------------------------------------------------------- */
+.match-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 8, 16, 0.95);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.5s ease;
+    backdrop-filter: blur(20px);
+}
+
+.match-ui-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: var(--space-md);
+    gap: var(--space-md);
+}
+
+/* ÜST: Skorboard */
+.match-scoreboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-xl);
+    background: linear-gradient(180deg, rgba(30, 38, 56, 0.9) 0%, rgba(18, 24, 38, 0.9) 100%);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.team-block {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+.home-team { justify-content: flex-end; text-align: right; }
+.away-team { justify-content: flex-start; text-align: left; }
+
+.team-color-indicator {
+    width: 24px;
+    height: 48px;
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+.score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 var(--space-xl);
+}
+
+.timer {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px var(--color-primary-glow);
+    letter-spacing: 2px;
+}
+.blink { animation: blinker 1s linear infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+.goals {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    gap: 15px;
+    color: white;
+}
+.match-phase {
+    font-size: 0.8rem;
+    color: var(--color-warning);
+    margin-top: 5px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* ORTA: Canvas ve İstatistikler */
+.match-center-stage {
+    display: flex;
+    gap: var(--space-md);
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sol Canlı İstatistikler */
+.match-live-stats {
+    width: 280px;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat-row-match {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.stat-row-match label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    text-align: center;
+    flex: 1;
+}
+.stat-row-match span {
+    font-weight: bold;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    min-width: 40px;
+}
+.stat-row-match span:first-child { text-align: left; }
+.stat-row-match span:last-child { text-align: right; }
+
+/* 2D Motor Canvas Alanı */
+.canvas-wrapper {
+    flex: 1;
+    position: relative;
+    background: #1a2333; /* Varsayılan koyu arka plan */
+    border: 2px solid var(--glass-border-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+}
+
+/* Çizilen Canvas Elementi */
+#match-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* En boy oranını koru */
+    image-rendering: pixelated; /* Keskin grafikler için (Eğer retro istenirse) */
+}
+
+/* Olay Flaşları (GOL, Kırmızı Kart Animasyonları) */
+.event-flash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100;
+    pointer-events: none; /* Arkaya tıklamayı engelleme */
+    animation: flash-strobe 0.5s ease-out;
+}
+
+#flash-title {
+    font-size: 6rem;
+    color: var(--color-primary);
+    text-shadow: 0 0 30px var(--color-primary-glow);
+    margin: 0;
+    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+#flash-subtitle {
+    font-size: 2rem;
+    color: white;
+    margin-top: -10px;
+    animation: slide-up 0.4s ease-out forwards;
+}
+
+@keyframes flash-strobe {
+    0% { background: rgba(255,255,255,0.8); }
+    100% { background: rgba(0,0,0,0.85); }
+}
+@keyframes pop-in {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes slide-up {
+    0% { transform: translateY(50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Sağ Spiker Log (Commentary) */
+.match-commentary {
+    width: 320px;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.commentary-box {
+    flex: 1;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comm-line {
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    border-radius: 4px;
+    line-height: 1.4;
+    border-left: 3px solid transparent;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Spiker Metin Türleri (Zar sonuçlarına göre) */
+.comm-line.neutral { color: var(--color-text-main); border-color: gray; background: rgba(255,255,255,0.02); }
+.comm-line.action { color: var(--color-primary); border-color: var(--color-primary); background: rgba(0,243,255,0.05); }
+.comm-line.danger { color: var(--color-danger); border-color: var(--color-danger); background: rgba(255,0,60,0.1); font-weight: bold; }
+.comm-line.goal { 
+    color: gold; 
+    border-color: gold; 
+    background: rgba(255,215,0,0.15); 
+    font-size: 1rem; 
+    font-weight: 800; 
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(255,215,0,0.2);
+}
+.comm-line.injury { color: var(--color-warning); border-color: orange; background: rgba(255,165,0,0.1); font-style: italic; }
+
+/* ALT: Maç Hız Kontrolleri */
+.match-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-xl);
+}
+
+.speed-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: var(--radius-pill);
+}
+
+.speed-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+.speed-btn.active {
+    background: var(--color-primary);
+    color: black;
+    box-shadow: 0 0 15px var(--color-primary-glow);
+    border-color: transparent;
+}
+.speed-btn.danger {
+    width: auto;
+    padding: 0 15px;
+    border-radius: var(--radius-sm);
+}
+
+.match-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* --------------------------------------------------------------------------
+   4. TAKIM KONUŞMASI (TEAM TALK) & ZAR (RPG) ANİMASYONLARI
+   -------------------------------------------------------------------------- */
+.talk-modal {
+    max-width: 800px;
+    padding: var(--space-xl);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(18,24,38,0.95) 0%, rgba(5,8,16,0.98) 100%);
+}
+
+.talk-header {
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.talk-current-status {
+    font-size: 1.1rem;
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-xl);
+    border: 1px dashed var(--glass-border-light);
+}
+
+.talk-options {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.talk-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.talk-btn .icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    transition: transform 0.3s;
+}
+
+.talk-texts h4 { color: var(--color-text-pure); margin-bottom: 5px; }
+.talk-texts p { font-size: 0.85rem; font-style: italic; margin-bottom: 10px; }
+.talk-texts small { font-size: 0.7rem; color: var(--color-text-muted); display: block; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px;}
+
+/* Seçenek Hover Etkileri */
+.talk-btn.aggressive:hover { border-color: var(--color-danger); background: rgba(255,0,60,0.1); box-shadow: 0 0 20px var(--color-danger-dim); }
+.talk-btn.aggressive:hover .icon { transform: scale(1.2) rotate(-5deg); }
+
+.talk-btn.encouraging:hover { border-color: var(--color-success); background: rgba(0,255,102,0.1); box-shadow: 0 0 20px var(--color-success-dim); }
+.talk-btn.encouraging:hover .icon { transform: scale(1.2) translateY(-5px); }
+
+.talk-btn.tactical:hover { border-color: var(--color-info); background: rgba(0,162,255,0.1); box-shadow: 0 0 20px rgba(0,162,255,0.15); }
+.talk-btn.tactical:hover .icon { transform: scale(1.2); }
+
+/* RPG Zar Animasyonu Kutusu */
+.talk-result-box {
+    margin-top: var(--space-md);
+    padding: var(--space-lg);
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.dice-animation {
+    font-size: 2rem;
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    margin-bottom: 15px;
+}
+
+/* Salla ve At Animasyonu Sınıfı (JS ile eklenecek) */
+.rolling .dice-animation {
+    animation: dice-shake 0.5s infinite;
+}
+
+@keyframes dice-shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-10deg); }
+    20% { transform: translate(-3px, 0px) rotate(10deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(10deg); }
+    50% { transform: translate(-1px, 2px) rotate(-10deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-10deg); }
+    80% { transform: translate(-1px, -1px) rotate(10deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-10deg); }
+}
+
+.result-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-height: 30px;
+    color: white;
+}
+
+.result-success { color: var(--color-success); text-shadow: 0 0 10px rgba(0,255,102,0.5); }
+.result-fail { color: var(--color-danger); text-shadow: 0 0 10px rgba(255,0,60,0.5); }
+
+/* ==========================================================================
+   TÜM CSS ADIMLARI TAMAMLANDI!
+   Muazzam bir görsel motor ve UI iskeleti inşa ettik.
+   Artık JS motorlarını (20 parça) yazmaya hazırız.
+   ========================================================================== */

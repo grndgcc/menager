@@ -1,0 +1,1305 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   CYBERERA FOOTBALL MANAGER 2026 - COMPONENTS CSS (ADIM 2)
+   Yazar: AI & Sen
+   Açıklama: Arayüz modülleri, Tablolar, Dev Profil Modalı, Antrenman Kartları,
+   Kupa Ağacı, Top-Bar, Sidebar ve Özel UI Bileşenleri.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GİRİŞ EKRANI & MENAJER YARATMA MERKEZİ
+   -------------------------------------------------------------------------- */
+.main-menu-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    padding: var(--space-xl);
+    text-align: center;
+    border-top: 4px solid var(--color-primary);
+}
+
+.logo-container {
+    margin-bottom: var(--space-xl);
+}
+
+.sub-logo {
+    color: var(--color-text-muted);
+    letter-spacing: 4px;
+    font-size: 1.2rem;
+    margin-top: -10px;
+}
+
+.version-tag {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    padding: 4px 12px;
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    color: var(--color-primary);
+}
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.menu-actions .cyber-btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+}
+
+.hidden-input {
+    display: none;
+}
+
+/* Menajer Oluşturma Grid Yapısı */
+.creation-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    padding: var(--space-xl);
+    overflow-y: auto;
+}
+
+.creation-header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.creation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+}
+
+.portrait-preview-box {
+    margin-top: var(--space-sm);
+    width: 100%;
+    max-width: 200px;
+    border: 2px dashed var(--glass-border-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 2 / 3; /* 2/3 oranını zorunlu kılar */
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portrait-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* RPG Nitelik Dağıtım Paneli */
+.attributes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.points-pool {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    padding: 5px 15px;
+    background: rgba(0, 243, 255, 0.1);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-primary);
+}
+
+.attribute-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.attr-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 10px 15px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-secondary);
+}
+
+.attr-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.attr-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.attr-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.attr-controls button {
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg-light);
+    border: 1px solid var(--glass-border);
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.attr-controls button:hover {
+    background: var(--color-primary);
+    color: black;
+    box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.attr-controls input {
+    width: 40px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: var(--color-text-pure);
+    font-size: 1.2rem;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.creation-footer {
+    margin-top: var(--space-xl);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--glass-border);
+}
+
+/* --------------------------------------------------------------------------
+   2. OYUN İÇİ ANA DÜZEN (HUB LAYOUT & TOP BAR)
+   -------------------------------------------------------------------------- */
+#game-ui-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+#top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    padding: 0 var(--space-lg);
+    border-bottom: 1px solid var(--glass-border);
+    border-radius: 0;
+    z-index: var(--z-header);
+    background: rgba(10, 15, 26, 0.85); /* Top bar daha opak */
+}
+
+/* Sol Yönlendirme Tuşları */
+.nav-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    color: var(--color-text-pure);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.nav-btn:not(:disabled):hover {
+    background: var(--color-primary);
+    color: black;
+}
+
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Orta Zaman Konsolu */
+.time-center-console {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.current-date-display {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.date-highlight {
+    color: var(--color-primary);
+    font-size: 1.6rem;
+    margin-right: 5px;
+}
+
+.next-match-info {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Sağ Menajer ve Para Paneli */
+.manager-top-panel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.economy-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    border-right: 1px solid var(--glass-border);
+    padding-right: var(--space-md);
+}
+
+.money-text {
+    color: var(--color-success);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.manager-mini-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.manager-mini-profile:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.manager-mini-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primary);
+}
+
+.manager-names {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+#topbar-manager-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+#topbar-club-name {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* Ana Grid Layout (Sol Menü + İçerik) */
+#main-layout-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   3. SOL MENÜ (SIDEBAR)
+   -------------------------------------------------------------------------- */
+#sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    background: rgba(18, 24, 38, 0.4); /* Biraz daha transparan */
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md) 0;
+    gap: 5px;
+}
+
+.sidebar-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 12px var(--space-md);
+    background: transparent;
+    border: none;
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.sidebar-btn .icon {
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+    opacity: 0.7;
+    transition: var(--transition-fast);
+}
+
+.sidebar-btn:hover {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+    color: var(--color-text-pure);
+}
+
+.sidebar-btn:hover .icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.sidebar-btn.active {
+    background: linear-gradient(90deg, rgba(0,243,255,0.15) 0%, transparent 100%);
+    color: var(--color-primary);
+    border-left: 3px solid var(--color-primary);
+}
+
+.sidebar-btn.active .icon {
+    opacity: 1;
+    text-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+/* Bildirim Rozeti (Örn: Antrenman Uyarısı) */
+.notification-badge {
+    background: var(--color-danger);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: var(--radius-pill);
+    padding: 2px 6px;
+    margin-left: auto;
+    box-shadow: 0 0 8px var(--color-danger-dim);
+}
+
+.sidebar-footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+#content-area {
+    position: relative;
+    padding: var(--space-md);
+    overflow: hidden; /* game-screen'ler kendi içlerinde scroll olacak */
+}
+
+/* --------------------------------------------------------------------------
+   4. TABLOLAR (KADRO, LİG, TARİHÇE)
+   -------------------------------------------------------------------------- */
+.table-container {
+    width: 100%;
+    max-height: calc(100vh - 180px); /* Üst bar ve headerları çıkararak */
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-border);
+}
+
+.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.cyber-table thead {
+    background: rgba(0,0,0,0.5);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-base);
+}
+
+.cyber-table th {
+    padding: 12px 10px;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.cyber-table td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    vertical-align: middle;
+}
+
+.cyber-table.hoverable-rows tbody tr {
+    transition: background var(--transition-fast);
+    cursor: pointer;
+}
+
+.cyber-table.hoverable-rows tbody tr:hover {
+    background: rgba(0, 243, 255, 0.08);
+}
+
+/* Hücre Hizalamaları */
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+/* Mevki Rozetleri (Sahanın bölgelerine göre renklendirme) */
+.pos-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.1);
+    min-width: 45px;
+    text-align: center;
+}
+
+.pos-gk { background: #eab308; color: #000; } /* Kaleci: Sarı */
+.pos-df { background: #3b82f6; color: #fff; } /* Defans: Mavi */
+.pos-mf { background: #22c55e; color: #000; } /* Orta Saha: Yeşil */
+.pos-st { background: #ef4444; color: #fff; } /* Forvet: Kırmızı */
+
+/* İsim Sütunu Özelleştirmesi */
+.player-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--color-text-pure);
+}
+
+.injury-icon {
+    font-size: 0.85rem;
+    animation: pulse-border 1.5s infinite;
+}
+
+/* Tablo İçi Mini Kondisyon Barları */
+.mini-bar-container {
+    width: 60px;
+    height: 8px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.mini-bar {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.mini-bar.green { background: var(--color-success); }
+.mini-bar.blue { background: var(--color-info); }
+.mini-bar.red { background: var(--color-danger); }
+.mini-bar.yellow { background: var(--color-warning); }
+
+/* Lig Tablosu Form Renkleri */
+.form-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    margin: 0 2px;
+    font-size: 10px;
+    line-height: 16px;
+    color: black;
+    font-weight: bold;
+}
+.form-w { background: var(--color-success); }
+.form-d { background: var(--color-warning); }
+.form-l { background: var(--color-danger); color: white; }
+
+/* --------------------------------------------------------------------------
+   5. DEV OYUNCU PROFİLİ MODALI (THE CROWN JEWEL)
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+}
+
+.modal-content.ultra-detailed {
+    width: 95vw;
+    max-width: 1100px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.btn-close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--glass-border);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-close-modal:hover {
+    background: var(--color-danger);
+    transform: rotate(90deg);
+}
+
+/* Profil Header (Dinamik Takım Rengi Gelecek) */
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-lg) var(--space-xl);
+    gap: var(--space-xl);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    /* JS tarafında background: linear-gradient() ile takım renkleri atanacak */
+    background: linear-gradient(135deg, #1a2333 0%, #0a0f1a 100%); 
+}
+
+.profile-avatar-box {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,255,255,0.2);
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+}
+
+.profile-avatar-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-main-info {
+    flex: 1;
+}
+
+#profile-name {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+#profile-club-name {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    font-family: var(--font-body);
+    font-weight: 400;
+    margin-bottom: var(--space-sm);
+}
+
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.special-trait { background: rgba(255, 215, 0, 0.2); border-color: gold; color: gold; }
+.status-badge.ban { background: rgba(255,0,0,0.2); border-color: red; color: #ff6b6b; }
+.status-badge.injury { background: rgba(255,165,0,0.2); border-color: orange; color: orange; }
+
+.profile-reputation {
+    text-align: right;
+    background: rgba(0,0,0,0.4);
+    padding: 10px 15px;
+    border-radius: var(--radius-md);
+}
+
+.rep-title {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.rep-stars .star {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+}
+.rep-stars .star.filled {
+    color: gold;
+    text-shadow: 0 0 5px rgba(255,215,0,0.5);
+}
+.rep-number {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Profil Gövdesi Grid */
+.profile-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    border-bottom: 1px solid rgba(0,243,255,0.2);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Kondisyon ve Moral Barları */
+.bar-group {
+    margin-bottom: 15px;
+}
+
+.bar-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1s ease-in-out;
+}
+
+.fill-green { background: linear-gradient(90deg, #00b09b, #96c93d); }
+.fill-blue { background: linear-gradient(90deg, #2193b0, #6dd5ed); }
+.fill-pink { background: linear-gradient(90deg, #ff007b, #ff758c); }
+
+.info-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.info-list li {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.info-list .label { font-size: 0.75rem; color: var(--color-text-muted); }
+.info-list .value { font-weight: 600; font-size: 0.95rem; }
+
+/* Stat Gridleri (RPG Nitelik ve Yetenekler) */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.stat-item:hover {
+    background: rgba(0,243,255,0.05);
+    border-color: rgba(0,243,255,0.3);
+}
+
+.stat-name { font-size: 0.85rem; color: var(--color-text-main); }
+.stat-val {
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: var(--font-heading);
+}
+
+/* Stat Renklendirmeleri (1-20 arası değerlere göre JS ile class atayabiliriz veya default ayar verebiliriz) */
+/* Örnek classlar JS tarafından eklenecek: .stat-low (1-9), .stat-mid(10-14), .stat-high(15-20) */
+.stat-low { color: var(--color-text-muted); }
+.stat-mid { color: var(--color-text-pure); }
+.stat-high { color: var(--color-success); text-shadow: 0 0 5px rgba(0,255,102,0.4); }
+
+/* Özel Sekmeler (Custom Tabs) */
+.custom-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: var(--space-md);
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    padding: 10px 15px;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+}
+
+.tab-btn:hover { color: var(--color-text-pure); }
+
+.tab-btn.active {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary-glow);
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* İstatistik Data Grid */
+.stats-data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.data-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.data-box strong {
+    font-size: 1.2rem;
+    color: var(--color-text-pure);
+    margin-top: 5px;
+    font-family: var(--font-heading);
+}
+
+.profile-actions-footer {
+    padding: var(--space-md) var(--space-xl);
+    background: rgba(0,0,0,0.5);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-group {
+    display: flex;
+    gap: 15px;
+}
+
+/* --------------------------------------------------------------------------
+   6. ANTRENMAN KARTLARI VE SLIDERLAR
+   -------------------------------------------------------------------------- */
+.training-groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+    max-height: calc(100vh - 200px);
+}
+
+.training-group-card {
+    display: flex;
+    flex-direction: column;
+    border-top: 3px solid var(--color-secondary);
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(0,0,0,0.3);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.group-header h3 { margin: 0; font-size: 1rem; }
+.player-count { font-size: 0.8rem; color: var(--color-text-muted); }
+
+.group-controls {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Özel Cyber Range Slider (Şiddet Ayarı İçin) */
+.intensity-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cyber-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    outline: none;
+    border: 1px solid var(--glass-border);
+}
+
+.cyber-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: ew-resize;
+    box-shadow: 0 0 10px var(--color-primary-glow);
+    transition: transform 0.1s;
+}
+
+.cyber-range::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+}
+
+.intensity-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+.intensity-val-display {
+    font-weight: bold;
+    color: var(--color-text-pure);
+}
+
+.energy-warning {
+    font-size: 0.8rem;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   7. FİKSTÜR, TAKVİM VE KUPA AĞACI (BRACKET)
+   -------------------------------------------------------------------------- */
+.fixture-layout-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--space-md);
+    height: calc(100vh - 200px);
+}
+
+.calendar-widget {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.day-name {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-weight: bold;
+}
+
+.day-box {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    position: relative;
+    cursor: pointer;
+}
+
+.day-box.past { opacity: 0.5; }
+.day-box.today { border-color: var(--color-primary); font-weight: bold; }
+.day-box.match-day::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: 0 0 5px var(--color-primary-glow);
+}
+
+.match-list-table .score-cell {
+    font-family: var(--font-heading);
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: rgba(0,0,0,0.2);
+}
+
+.upcoming-match { background: rgba(0, 243, 255, 0.03); }
+
+/* Kupa Ağacı (Bracket) Tasarımı */
+.cup-bracket-container {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    padding: var(--space-lg);
+    align-items: center;
+    min-width: max-content;
+}
+
+.bracket-round {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+}
+
+.round-title {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.bracket-match {
+    background: var(--color-bg-dark);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    width: 200px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* Bracket Çizgileri (Ağaç Bağlantıları) */
+.bracket-round:not(:last-child) .bracket-match::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    width: 20px;
+    height: 2px;
+    background: var(--glass-border-light);
+}
+
+.team-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.team-row:last-child { border-bottom: none; }
+
+.team-row.winner {
+    font-weight: bold;
+    color: var(--color-primary);
+    background: rgba(0,243,255,0.05);
+}
+
+.super-cup-round {
+    margin-left: 60px;
+    padding-left: 40px;
+    border-left: 2px dashed gold;
+}
+.super-cup-match { border-color: gold; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+.cup-label { font-size: 0.6rem; text-align: center; background: rgba(0,0,0,0.5); color: #aaa; padding: 2px; }
+
+/* --------------------------------------------------------------------------
+   8. TRANSFER PAZARLIK VE CHAT KUTUSU
+   -------------------------------------------------------------------------- */
+.transfer-layout-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: var(--space-md);
+    height: calc(100vh - 160px);
+}
+
+.ai-response-box {
+    background: rgba(18, 24, 38, 0.9);
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+    position: relative;
+    font-style: italic;
+    color: #cbd5e1;
+}
+
+/* Chat Balonu Oku */
+.ai-response-box::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent var(--color-secondary) transparent;
+}
+
+.massive-input {
+    font-size: 1.5rem;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: bold;
+    color: var(--color-success);
+    background: rgba(0,0,0,0.6);
+}
+
+/* --------------------------------------------------------------------------
+   9. LIFESTYLE (YAŞAM STİLİ) & MAĞAZA KARTLARI
+   -------------------------------------------------------------------------- */
+.lifestyle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.store-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    transition: var(--transition-fast);
+}
+
+.store-item:hover {
+    border-color: var(--color-primary);
+    background: rgba(0,243,255,0.05);
+}
+
+.item-icon {
+    font-size: 2.5rem;
+    background: rgba(255,255,255,0.05);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-info h4 { margin: 0; font-size: 1rem; }
+.item-info span { font-size: 0.75rem; color: var(--color-text-muted); }
+.item-info .bonus { font-weight: bold; margin-top: 4px; }
+
+/* İlişki Durumu Kartı */
+.current-relationship-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(255, 0, 123, 0.05);
+    border: 1px solid rgba(255, 0, 123, 0.3);
+    padding: 15px;
+    border-radius: var(--radius-md);
+}
+
+.partner-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.partner-avatar {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tarihçe Rekor Kartları */
+.records-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.record-card {
+    text-align: center;
+    padding: 20px 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.record-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.record-value {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin: 5px 0;
+}
+
+.award-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.gold-award {
+    background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
+    border-color: rgba(255,215,0,0.5);
+}
+
+.gold-award .award-winner {
+    color: gold;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255,215,0,0.4);
+}
+
+/* ==========================================================================
+   ADIM 2 CSS SONU
+   Sıradaki CSS adımında 2D Stadyum/Taktik Tahtası Sürükle-Bırak dinamiklerini,
+   Canlı Maç Motoru (Canvas overlay), Takım Konuşması Zarları ve
+   Spiker arayüzünü (match.css) tasarlayacağız.
+   ========================================================================== */
